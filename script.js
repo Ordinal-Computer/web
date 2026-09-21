@@ -8,12 +8,39 @@
   const menuLabel = document.getElementById("menuLabel");
 
   /* ---------- Menu overlay ---------- */
+  const menuOverlay = document.getElementById("menuOverlay");
+  let menuReturnFocus = null;
+
   const setMenu = (open) => {
+    const wasOpen = document.body.classList.contains("menu-open");
     document.body.classList.toggle("menu-open", open);
     menuBtn.setAttribute("aria-expanded", String(open));
     menuLabel.textContent = open ? "Close" : "Menu";
-    document.getElementById("menuOverlay").setAttribute("aria-hidden", String(!open));
+    menuOverlay.setAttribute("aria-hidden", String(!open));
+    if (open && !wasOpen) {
+      menuReturnFocus = document.activeElement;
+      const first = menuOverlay.querySelector("a, button");
+      if (first) first.focus();
+    } else if (!open && wasOpen) {
+      const back = menuReturnFocus && menuReturnFocus !== document.body ? menuReturnFocus : menuBtn;
+      back.focus();
+      menuReturnFocus = null;
+    }
   };
+
+  // keep Tab inside the open menu
+  window.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab" || !document.body.classList.contains("menu-open")) return;
+    const focusables = [menuBtn, ...menuOverlay.querySelectorAll("a, button")];
+    const i = focusables.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) {
+      e.preventDefault();
+      focusables[focusables.length - 1].focus();
+    } else if (!e.shiftKey && i === focusables.length - 1) {
+      e.preventDefault();
+      focusables[0].focus();
+    }
+  });
   menuBtn.addEventListener("click", () =>
     setMenu(!document.body.classList.contains("menu-open"))
   );
@@ -166,6 +193,277 @@
     howShots.forEach((s) => s.classList.add("active"));
     if (ctaCard) ctaCard.classList.add("in");
   }
+
+  /* ------------- Hero field: the fleet as a quiet plane of cores -------------
+     Points on a receding plane. Site grays on white; a few dots at a time
+     warm to violet and fade, like jobs finishing somewhere far away. */
+
+  const heroField = document.getElementById("heroField");
+
+  if (heroField && window.THREE && !reduceMotion) {
+    try {
+      const COLS = 96;
+      const ROWS = 40;
+      const COUNT = COLS * ROWS;
+
+      const renderer = new THREE.WebGLRenderer({ canvas: heroField, alpha: true, antialias: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 200);
+      camera.position.set(0, 4.4, 26);
+      camera.lookAt(0, 0, 0);
+
+      const pos = new Float32Array(COUNT * 3);
+      const grid = new Float32Array(COUNT * 2);
+      const rand = new Float32Array(COUNT);
+      for (let i = 0; i < COUNT; i++) {
+        const gx = (i % COLS) / (COLS - 1) - 0.5;
+        const gz = Math.floor(i / COLS) / (ROWS - 1) - 0.5;
+        pos[i * 3] = gx * 46;
+        pos[i * 3 + 1] = 0;
+        pos[i * 3 + 2] = gz * 26;
+        grid[i * 2] = gx;
+        grid[i * 2 + 1] = gz;
+        rand[i] = Math.random();
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+      geo.setAttribute("aGrid", new THREE.BufferAttribute(grid, 2));
+      geo.setAttribute("aRand", new THREE.BufferAttribute(rand, 1));
+
+      const uniforms = {
+        uTime: { value: 0 },
+        uDPR: { value: Math.min(window.devicePixelRatio || 1, 2) },
+      };
+
+      const material = new THREE.RawShaderMaterial({
+        uniforms,
+        transparent: true,
+        depthWrite: false,
+        vertexShader: `
+          precision highp float;
+          uniform mat4 modelViewMatrix;
+          uniform mat4 projectionMatrix;
+          uniform float uTime;
+          uniform float uDPR;
+          attribute vec3 position;
+          attribute vec2 aGrid;
+          attribute float aRand;
+          varying float vPulse;
+          varying float vFade;
+
+          void main() {
+            vec3 p = position;
+            p.y += sin(aGrid.x * 7.0 + uTime * 0.26) * cos(aGrid.y * 6.0 + uTime * 0.21) * 0.55;
+
+            // each dot warms briefly on its own slow clock
+            float ph = fract(uTime * 0.03 + aRand);
+            vPulse = smoothstep(0.0, 0.035, ph) * (1.0 - smoothstep(0.035, 0.11, ph));
+
+            // no hard rectangle: fade the plane out toward its own edges
+            float ex = 1.0 - smoothstep(0.3, 0.5, abs(aGrid.x));
+            float ez = 1.0 - smoothstep(0.28, 0.5, abs(aGrid.y));
+            vFade = ex * ez;
+
+            vec4 mv = modelViewMatrix * vec4(p, 1.0);
+            gl_Position = projectionMatrix * mv;
+            gl_PointSize = (1.5 + vPulse * 1.5) * uDPR * (30.0 / -mv.z);
+          }
+        `,
+        fragmentShader: `
+          precision highp float;
+          varying float vPulse;
+          varying float vFade;
+
+          void main() {
+            float d = length(gl_PointCoord - 0.5);
+            float a = smoothstep(0.5, 0.18, d) * vFade * (0.32 + vPulse * 0.5);
+            vec3 base = vec3(0.63, 0.63, 0.66);
+            vec3 warm = vec3(0.486, 0.361, 1.0);
+            gl_FragColor = vec4(mix(base, warm, vPulse), a);
+          }
+        `,
+      });
+
+      const cloud = new THREE.Points(geo, material);
+      cloud.frustumCulled = false;
+      scene.add(cloud);
+
+      const resizeField = () => {
+        const r = heroField.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        renderer.setSize(r.width, r.height, false);
+        camera.aspect = r.width / r.height;
+        camera.updateProjectionMatrix();
+      };
+
+      let running = false;
+      const frame = (now) => {
+        if (!running) return;
+        uniforms.uTime.value = now / 1000;
+        renderer.render(scene, camera);
+        requestAnimationFrame(frame);
+      };
+
+      const fieldIO = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting && !running) {
+            running = true;
+            requestAnimationFrame(frame);
+          } else if (!en.isIntersecting) {
+            running = false;
+          }
+        });
+      });
+      fieldIO.observe(heroField);
+
+      resizeField();
+      window.addEventListener("resize", resizeField);
+      renderer.render(scene, camera); // frame zero: never a blank hero
+    } catch (err) {
+      heroField.style.display = "none"; // no WebGL, the hero stays quiet
+    }
+  }
+
+  /* ------------------- CTA finale: the fleet at night -------------------
+     The same idea the hero opens with, restated quietly at the end. A field
+     of core-lights drifting in the dark behind the closing line. Points, one
+     draw call, paused the moment the card scrolls away. */
+
+  const starsCanvas = document.getElementById("ctaStars");
+
+  if (starsCanvas && window.THREE && !reduceMotion) {
+    try {
+      const N = 1600;
+
+      const renderer = new THREE.WebGLRenderer({ canvas: starsCanvas, alpha: true, antialias: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 200);
+      camera.position.set(0, 0, 30);
+
+      const pos = new Float32Array(N * 3);
+      const rand = new Float32Array(N);
+      const size = new Float32Array(N);
+      const shade = new Float32Array(N); // 0 = deep indigo, 1 = near white
+      for (let i = 0; i < N; i++) {
+        pos[i * 3] = (Math.random() - 0.5) * 56;
+        pos[i * 3 + 1] = (Math.random() - 0.5) * 26;
+        pos[i * 3 + 2] = (Math.random() - 0.5) * 18;
+        rand[i] = Math.random();
+        const big = Math.random() < 0.06;
+        size[i] = big ? 5 + Math.random() * 4 : 1.2 + Math.random() * 2.2;
+        shade[i] = big ? 0.75 + Math.random() * 0.25 : Math.random() * 0.6;
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+      geo.setAttribute("aRand", new THREE.BufferAttribute(rand, 1));
+      geo.setAttribute("aSize", new THREE.BufferAttribute(size, 1));
+      geo.setAttribute("aShade", new THREE.BufferAttribute(shade, 1));
+
+      const uniforms = {
+        uTime: { value: 0 },
+        uDPR: { value: Math.min(window.devicePixelRatio || 1, 2) },
+      };
+
+      const material = new THREE.RawShaderMaterial({
+        uniforms,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexShader: `
+          precision highp float;
+          uniform mat4 modelViewMatrix;
+          uniform mat4 projectionMatrix;
+          uniform float uTime;
+          uniform float uDPR;
+          attribute vec3 position;
+          attribute float aRand;
+          attribute float aSize;
+          attribute float aShade;
+          varying float vTwinkle;
+          varying float vShade;
+
+          void main() {
+            vec3 p = position;
+            float ph = aRand * 6.2831;
+            p.x += sin(uTime * 0.11 + ph) * 0.9;
+            p.y += cos(uTime * 0.09 + ph * 1.7) * 0.7;
+            vec4 mv = modelViewMatrix * vec4(p, 1.0);
+            gl_Position = projectionMatrix * mv;
+            gl_PointSize = aSize * uDPR * (26.0 / -mv.z);
+            vTwinkle = 0.72 + 0.28 * sin(uTime * (0.25 + 0.5 * aRand) + ph * 3.0);
+            vShade = aShade;
+          }
+        `,
+        fragmentShader: `
+          precision highp float;
+          varying float vTwinkle;
+          varying float vShade;
+
+          void main() {
+            float d = length(gl_PointCoord - 0.5);
+            float a = smoothstep(0.5, 0.12, d) * vTwinkle;
+            vec3 col = mix(vec3(0.29, 0.22, 1.0), vec3(0.82, 0.78, 1.0), vShade);
+            gl_FragColor = vec4(col * a, a * 0.85);
+          }
+        `,
+      });
+
+      const cloud = new THREE.Points(geo, material);
+      cloud.frustumCulled = false;
+      scene.add(cloud);
+
+      let running = false;
+      let starPX = 0;
+      let starTX = 0;
+
+      window.addEventListener("pointermove", (e) => {
+        starTX = (e.clientX / window.innerWidth - 0.5) * 2;
+      });
+
+      const resizeStars = () => {
+        const r = starsCanvas.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        renderer.setSize(r.width, r.height, false);
+        camera.aspect = r.width / r.height;
+        camera.updateProjectionMatrix();
+      };
+
+      const frame = (now) => {
+        if (!running) return;
+        const t = now / 1000;
+        uniforms.uTime.value = t;
+        starPX += (starTX - starPX) * 0.03;
+        cloud.rotation.y = Math.sin(t * 0.05) * 0.05 + starPX * 0.05;
+        cloud.rotation.z = Math.sin(t * 0.03) * 0.02;
+        renderer.render(scene, camera);
+        requestAnimationFrame(frame);
+      };
+
+      const starsIO = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting && !running) {
+            running = true;
+            requestAnimationFrame(frame);
+          } else if (!en.isIntersecting) {
+            running = false;
+          }
+        });
+      });
+      starsIO.observe(starsCanvas);
+
+      resizeStars();
+      window.addEventListener("resize", resizeStars);
+      renderer.render(scene, camera); // paint frame zero now: never a blank card
+    } catch (err) {
+      starsCanvas.style.display = "none"; // the card's own gradient carries it
+    }
+  }
+
 
   /* ---------- 3D logo: the omega mark swept as a metal tube ---------- */
   let logoSpin = 0;
