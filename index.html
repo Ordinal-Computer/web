@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ordinal | Infinite compute on your computer.</title>
+  <meta name="description" content="Ordinal is the future of processors. Train models, render films, and run week-long simulations locally, drawing zero watts. Unlimited compute on any computer.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%230a0a0a'/%3E%3Cpath d='M9 11c0 7 3.2 10 5 10 1.8 0 2-2.6 2-4.6 0 2 .2 4.6 2 4.6 1.8 0 5-3 5-10' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,300..700&family=Google+Sans+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="top">
+
+  <!-- ====================== Header ====================== -->
+  <header class="site-header" id="siteHeader">
+    <a class="logo-chip" href="#top" id="logoHome" aria-label="Back to top">
+      <canvas class="logo-3d" id="logoCanvas" aria-hidden="true"></canvas>
+      <svg viewBox="0 0 24 24" class="omega" aria-hidden="true">
+        <path d="M5 8c0 6.4 2.9 9.2 4.6 9.2 1.7 0 2.4-2.4 2.4-4.4 0 2 .7 4.4 2.4 4.4 1.7 0 4.6-2.8 4.6-9.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path class="omega-spark" d="M5 8c0 6.4 2.9 9.2 4.6 9.2 1.7 0 2.4-2.4 2.4-4.4 0 2 .7 4.4 2.4 4.4 1.7 0 4.6-2.8 4.6-9.2" pathLength="100" fill="none" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+    </a>
+
+    <button class="menu-pill" id="menuBtn" aria-expanded="false" aria-controls="menuOverlay">
+      <span class="menu-icon" aria-hidden="true"><i></i><i></i></span>
+      <span class="menu-label" id="menuLabel">Menu</span>
+    </button>
+
+    <a class="btn btn-dark header-demo" id="headerDemo" href="#cta">Book a demo</a>
+  </header>
+
+  <!-- ====================== Menu overlay ====================== -->
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <div class="menu-inner">
+      <nav class="menu-nav">
+        <a href="#top" data-menu-link>Overview</a>
+        <a href="#how" data-menu-link>How it works</a>
+        <a href="#pricing" data-menu-link>Pricing</a>
+        <a href="#faq" data-menu-link>Questions</a>
+      </nav>
+      <div class="menu-actions">
+        <a class="btn btn-dark" href="#cta" data-menu-link>Download</a>
+        <a class="btn btn-ghost" href="#cta" data-menu-link>Book a demo</a>
+      </div>
+      <p class="menu-foot mono">Ordinal runs on macOS &amp; Linux · results sync everywhere</p>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- ====================== Hero ====================== -->
+    <section class="hero">
+      <div class="hero-cards" aria-hidden="true">
+        <div class="jcard j1">
+          <div class="job-top"><span class="chip violet">TRAIN</span><span class="mono j-state run">running</span></div>
+          <p class="jc-name">llama&#8209;70b&#8209;ft.job</p>
+          <p class="mono jc-meta">16,777,216 cores</p>
+          <div class="jbar"><i class="violet" style="--w:86%"></i></div>
+          <p class="mono jc-sub">86% · 3.1 EFLOP</p>
+        </div>
+        <div class="jcard j2">
+          <div class="job-top"><span class="chip orange">RENDER</span><span class="mono j-state run">running</span></div>
+          <p class="jc-name">cityscape_4k.blend</p>
+          <p class="mono jc-meta">frame 218 / 240</p>
+          <div class="jbar"><i class="orange" style="--w:91%"></i></div>
+          <p class="mono jc-sub">91% · 8K · cycles</p>
+        </div>
+        <div class="jcard j3">
+          <div class="job-top"><span class="chip teal">SIM</span><span class="mono j-state run">running</span></div>
+          <p class="jc-name">monte&#8209;carlo&#8209;1e12</p>
+          <p class="mono jc-meta">10&#178; &#215; 10&#185;&#8304; samples</p>
+          <div class="jbar"><i class="teal" style="--w:64%"></i></div>
+          <p class="mono jc-sub">64% · 44 PFLOP</p>
+        </div>
+        <div class="jcard j4">
+          <div class="job-top"><span class="chip blue">BUILD</span><span class="mono j-state done">done</span></div>
+          <p class="jc-name">chromium&#8209;full</p>
+          <p class="mono jc-meta">61,204 targets</p>
+          <div class="jbar"><i class="blue" style="--w:100%"></i></div>
+          <p class="mono jc-sub">&#10003; 1.4 s</p>
+        </div>
+        <div class="jcard mini j5">
+          <span class="mini-omega">ω</span>
+          <p class="mono jc-sub">0.0 W · fans idle</p>
+        </div>
+      </div>
+
+      <div class="container hero-copy">
+        <div class="hero-badge reveal">
+          <span class="badge-omega">ω</span>
+          Backed by transfinite induction
+        </div>
+        <h1 class="reveal d1">Infinite compute<br><span class="dim">on any computer</span></h1>
+        <p class="hero-sub reveal d2">The future of processors. Train models, render films, and run week&#8209;long simulations locally, while your CPU stays asleep. Results in seconds, on every device.</p>
+        <div class="hero-actions reveal d3">
+          <a class="btn btn-dark" href="#pricing">Download</a>
+          <a class="btn btn-ghost" href="#cta">Book a demo</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== Pinned console demo ====================== -->
+    <section class="demo" id="demo">
+      <div class="demo-pin">
+        <p class="demo-caption mono">&#9654;&nbsp; Jobs in Ordinal draw zero watts on device</p>
+
+        <div class="demo-panel" id="demoPanel">
+          <div class="window console">
+            <div class="win-bar">
+              <div class="dots"><i></i><i></i><i></i></div>
+              <div class="win-nav">&#8249;&nbsp;&nbsp;&#8250;</div>
+              <div class="win-title">Training</div>
+              <div class="win-tools mono"><span>View</span><span>Sort</span><span>Share</span><span>Search</span></div>
+            </div>
+            <div class="win-body">
+              <aside class="sidebar">
+                <p class="side-label">Machines</p>
+                <a class="side-item active"><i class="si laptop"></i>MacBook Pro</a>
+                <a class="side-item"><i class="si desktop"></i>Mac Studio</a>
+                <a class="side-item"><i class="si server"></i>render-node-01</a>
+                <p class="side-label">Queues</p>
+                <a class="side-item"><i class="si dot violet"></i>Training</a>
+                <a class="side-item"><i class="si dot orange"></i>Rendering</a>
+                <a class="side-item"><i class="si dot teal"></i>Simulation</a>
+                <a class="side-item"><i class="si dot blue"></i>Builds</a>
+                <p class="side-label">Processors</p>
+                <a class="side-item"><i class="si om">ω</i>Ordinal</a>
+                <a class="side-item"><i class="si chip"></i>Local CPU</a>
+              </aside>
+              <div class="content">
+                <div class="tile-grid">
+                  <div class="tile folder">
+                    <div class="folder-shape violet"></div>
+                    <p class="tile-name">TRAINING</p>
+                  </div>
+                  <div class="tile folder">
+                    <div class="folder-shape orange"></div>
+                    <p class="tile-name">RENDERING</p>
+                  </div>
+                  <div class="tile folder">
+                    <div class="folder-shape teal"></div>
+                    <p class="tile-name">SIMULATION</p>
+                  </div>
+
+                  <div class="tile job focus" id="focusJob">
+                    <div class="job-top"><span class="chip violet">TRAIN</span><span class="mono j-state run">running</span></div>
+                    <p class="tile-name">llama&#8209;70b&#8209;ft.job</p>
+                    <p class="mono tile-meta">16,777,216 cores</p>
+                    <div class="jbar"><i class="violet" style="--w:86%"></i></div>
+                    <p class="mono tile-sub"><span class="j-pct">86%</span> · 3.1 EFLOP</p>
+                  </div>
+
+                  <div class="tile job">
+                    <div class="job-top"><span class="chip orange">RENDER</span><span class="mono j-state run">running</span></div>
+                    <p class="tile-name">cityscape_4k.blend</p>
+                    <p class="mono tile-meta">frame 218 / 240</p>
+                    <div class="jbar"><i class="orange" style="--w:91%"></i></div>
+                    <p class="mono tile-sub">91% · 8K · cycles</p>
+                  </div>
+
+                  <div class="tile job">
+                    <div class="job-top"><span class="chip teal">SIM</span><span class="mono j-state run">running</span></div>
+                    <p class="tile-name">monte&#8209;carlo&#8209;1e12</p>
+                    <p class="mono tile-meta">10&#178; &#215; 10&#185;&#8304; samples</p>
+                    <div class="jbar"><i class="teal" style="--w:64%"></i></div>
+                    <p class="mono tile-sub">64% · 44 PFLOP</p>
+                  </div>
+
+                  <div class="tile job">
+                    <div class="job-top"><span class="chip blue">BUILD</span><span class="mono j-state done">done</span></div>
+                    <p class="tile-name">chromium&#8209;full</p>
+                    <p class="mono tile-meta">61,204 targets</p>
+                    <div class="jbar"><i class="blue" style="--w:100%"></i></div>
+                    <p class="mono tile-sub">&#10003; 1.4 s</p>
+                  </div>
+
+                  <div class="tile job">
+                    <div class="job-top"><span class="chip violet">TRAIN</span><span class="mono j-state run">running</span></div>
+                    <p class="tile-name">sdxl&#8209;lora&#8209;night</p>
+                    <p class="mono tile-meta">2,097,152 cores</p>
+                    <div class="jbar"><i class="violet" style="--w:38%"></i></div>
+                    <p class="mono tile-sub">38% · 0.4 EFLOP</p>
+                  </div>
+
+                  <div class="tile job">
+                    <div class="job-top"><span class="chip orange">RENDER</span><span class="mono j-state run">running</span></div>
+                    <p class="tile-name">feature&#8209;film&#8209;grade</p>
+                    <p class="mono tile-meta">128 EFLOP</p>
+                    <div class="jbar"><i class="orange" style="--w:52%"></i></div>
+                    <p class="mono tile-sub">52% · DCI&#8209;8K</p>
+                  </div>
+
+                  <div class="tile job">
+                    <div class="job-top"><span class="chip teal">SIM</span><span class="mono j-state run">running</span></div>
+                    <p class="tile-name">protein&#8209;fold&#8209;b7</p>
+                    <p class="mono tile-meta">4,194,304 cores</p>
+                    <div class="jbar"><i class="teal" style="--w:73%"></i></div>
+                    <p class="mono tile-sub">73% · batch 7 / 9</p>
+                  </div>
+
+                  <div class="tile job">
+                    <div class="job-top"><span class="chip blue">BUILD</span><span class="mono j-state done">done</span></div>
+                    <p class="tile-name">llvm&#8209;stage2</p>
+                    <p class="mono tile-meta">14,988 targets</p>
+                    <div class="jbar"><i class="blue" style="--w:100%"></i></div>
+                    <p class="mono tile-sub">&#10003; 0.8 s</p>
+                  </div>
+
+                  <div class="tile job">
+                    <div class="job-top"><span class="chip violet">TRAIN</span><span class="mono j-state queue">queued</span></div>
+                    <p class="tile-name">recsys&#8209;v9</p>
+                    <p class="mono tile-meta">awaiting ω&#8320;&#8330;&#8331;</p>
+                    <div class="jbar"><i class="violet" style="--w:4%"></i></div>
+                    <p class="mono tile-sub">starts in 0.2 s</p>
+                  </div>
+                </div>
+
+                <div class="status-bar mono">
+                  <span>12 jobs · ω cores free · 0.0 W drawn · CPU 2%</span>
+                  <span class="crumb">Ordinal &#8250; MacBook Pro &#8250; Training</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Get-info style popover -->
+          <div class="job-info" id="jobInfo">
+            <div class="ji-titlebar mono">llama&#8209;70b&#8209;ft.job Info</div>
+            <div class="ji-head">
+              <span class="chip violet lg">TRAIN</span>
+              <div class="ji-name">
+                <p>llama&#8209;70b&#8209;ft.job</p>
+                <p class="mono ji-mod">Started Today, 4:12 PM</p>
+              </div>
+              <span class="mono ji-size">3.1 EFLOP</span>
+            </div>
+            <div class="ji-rows mono">
+              <p><span>Kind:</span>Training run · 70,000,000,000 params</p>
+              <p><span>Cores:</span>16,777,216 assigned&nbsp; <em>( zero watts on device )</em></p>
+              <p><span>Threads:</span>up to ω, then keep counting</p>
+              <p><span>Where:</span>Ordinal &#8250; MacBook Pro &#8250; Training</p>
+              <p><span>Heat:</span>none · fans idle</p>
+              <p><span>ETA:</span>before you finish this sentence</p>
+            </div>
+          </div>
+
+          <svg class="demo-cursor" id="demoCursor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 3l14 8.5-6.2 1.6L9.5 19z" fill="#fff" stroke="#0a0a0a" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+
+          <div class="scroll-pill mono" id="scrollPill">SCROLL DOWN <span class="sp-arrow">&#8595;</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== Statement ====================== -->
+    <section class="statement" id="statement">
+      <p class="statement-text" id="statementText">Ordinal is the future of processors. Exaflops on your computer, drawing zero watts of power.</p>
+    </section>
+
+    <!-- ====================== Features ====================== -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="features-head">
+          <h2 class="reveal">Never wait on a progress bar again</h2>
+          <p class="reveal d1">Ordinal schedules work onto transfinite cores the instant an app asks for cycles. No more overnight renders, week&#8209;long training runs, or laptops that double as space heaters.</p>
+        </div>
+
+        <div class="feature-cols">
+          <div class="fcol reveal">
+            <p class="fnum mono">01</p>
+            <h3>Jobs finish instantly</h3>
+            <p>Work spreads across ordinal&#8209;indexed cores, so a render that used to take all night converges in about the time it takes to draw its own progress bar.</p>
+          </div>
+          <div class="fcol reveal d1">
+            <p class="fnum mono">02</p>
+            <h3>Every device, same result</h3>
+            <p>Hit run and the output lands on every machine signed into the same Ordinal within seconds. Teammates watch it arrive in real time.</p>
+          </div>
+          <div class="fcol reveal d2">
+            <p class="fnum mono">03</p>
+            <h3>Works with the tools you already use</h3>
+            <p>Blender, Premiere, PyTorch, and clang all see Ordinal as ordinary cores. No rewrites, no plugins, no cluster to configure.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="marquees" aria-hidden="true">
+        <div class="marquee m-left">
+          <div class="marquee-track">
+            <!-- set A -->
+            <div class="mcard"><span class="chip violet">TRAIN</span><span class="mname">llama&#8209;70b&#8209;ft</span><span class="mono msize">3.1 EFLOP</span></div>
+            <div class="mcard"><span class="chip orange">RENDER</span><span class="mname">cityscape_4k.blend</span><span class="mono msize">1.8 s</span></div>
+            <div class="mcard"><span class="chip teal">SIM</span><span class="mname">monte&#8209;carlo&#8209;1e12</span><span class="mono msize">44 PFLOP</span></div>
+            <div class="mcard"><span class="chip blue">BUILD</span><span class="mname">chromium&#8209;full</span><span class="mono msize">1.4 s</span></div>
+            <div class="mcard"><span class="chip violet">TRAIN</span><span class="mname">sdxl&#8209;lora&#8209;night</span><span class="mono msize">0.4 EFLOP</span></div>
+            <div class="mcard"><span class="chip orange">RENDER</span><span class="mname">feature&#8209;film&#8209;grade</span><span class="mono msize">128 EFLOP</span></div>
+            <div class="mcard"><span class="chip teal">SIM</span><span class="mname">wind&#8209;tunnel&#8209;10e9</span><span class="mono msize">0.9 s</span></div>
+            <div class="mcard"><span class="chip blue">BUILD</span><span class="mname">llvm&#8209;stage2</span><span class="mono msize">0.8 s</span></div>
+          </div>
+        </div>
+        <div class="marquee m-right">
+          <div class="marquee-track">
+            <div class="mcard"><span class="chip teal">SIM</span><span class="mname">protein&#8209;fold&#8209;b7</span><span class="mono msize">4.2M cores</span></div>
+            <div class="mcard"><span class="chip violet">TRAIN</span><span class="mname">recsys&#8209;v9</span><span class="mono msize">0.9 s</span></div>
+            <div class="mcard"><span class="chip orange">RENDER</span><span class="mname">brooklyn_cut &#8594; 8K</span><span class="mono msize">2.1 s</span></div>
+            <div class="mcard"><span class="chip blue">BUILD</span><span class="mname">kernel&#8209;allmod</span><span class="mono msize">0.6 s</span></div>
+            <div class="mcard"><span class="chip violet">TRAIN</span><span class="mname">world&#8209;model&#8209;xl</span><span class="mono msize">9.7 EFLOP</span></div>
+            <div class="mcard"><span class="chip teal">SIM</span><span class="mname">n&#8209;body&#8209;galaxy</span><span class="mono msize">10&#185;&#185; stars</span></div>
+            <div class="mcard"><span class="chip orange">RENDER</span><span class="mname">dailies&#8209;proxy</span><span class="mono msize">0.4 s</span></div>
+            <div class="mcard"><span class="chip blue">BUILD</span><span class="mname">monorepo&#8209;ci</span><span class="mono msize">1.1 s</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== Dark walkthrough ====================== -->
+    <section class="how" id="how" data-dark>
+      <div class="how-pin">
+        <div class="how-grid container">
+          <div class="how-copy">
+            <div class="how-step active" data-step="0">
+              <h3>Sign in, see your cores</h3>
+              <p>A new processor called Ordinal appears next to your CPU. A transfinite number of cores, drawing none of your battery.</p>
+            </div>
+            <div class="how-step" data-step="1">
+              <h3>Run anything instantly</h3>
+              <p>Compile, grade, train, and simulate on cores that never saturate. Ordinal widens to exactly the parallelism your job asks for, and your fans never spin.</p>
+            </div>
+            <div class="how-step" data-step="2">
+              <h3>Dispatch at the speed of thought</h3>
+              <p>Press &#8997;&nbsp;Return and the Ordinal bar appears. Type what you want; it returns before the key comes back up.</p>
+            </div>
+            <div class="how-step" data-step="3">
+              <h3>Results land before jobs finish</h3>
+              <p>Teammates and agents submit to the same Ordinal, and every connected device can scrub the output while the job is still running.</p>
+            </div>
+          </div>
+
+          <div class="how-stage">
+            <!-- Step 1: processors table -->
+            <div class="how-shot active" data-step="0">
+              <div class="window dark activity">
+                <div class="win-bar dark"><div class="dots color"><i></i><i></i><i></i></div><div class="win-title">Activity — Processors</div></div>
+                <div class="act-table mono">
+                  <div class="act-row head"><span>Processor</span><span>Cores</span><span>Busy</span><span>Power</span></div>
+                  <div class="act-row"><span>Apple M4 Pro</span><span>12</span><span>4%</span><span>6.2 W</span></div>
+                  <div class="act-row"><span>GPU (40&#8209;core)</span><span>40</span><span>11%</span><span>9.8 W</span></div>
+                  <div class="act-row hl"><span><i class="om-badge">ω</i>Ordinal</span><span>ω</span><span>0% · &#8734; free</span><span>0.0 W</span></div>
+                  <div class="act-row"><span>Neural Engine</span><span>16</span><span>2%</span><span>1.1 W</span></div>
+                </div>
+                <p class="act-foot mono">Ordinal attached 0:03 ago · zero thermal impact</p>
+              </div>
+            </div>
+
+            <!-- Step 2: terminal -->
+            <div class="how-shot" data-step="1">
+              <div class="window dark term">
+                <div class="win-bar dark"><div class="dots color"><i></i><i></i><i></i></div><div class="win-title">ordinal — zsh — 92&#215;24</div></div>
+                <div class="term-body mono">
+                  <p><span class="t-prompt">~/studio $</span> ordinal run blender -b cityscape_4k.blend -a</p>
+                  <p class="t-dim">&#10247; mapping 240 frames onto cores ω&#8320; … ω&#8320;+239</p>
+                  <p><span class="t-ok">&#10003;</span> 240 frames rendered in 1.8 s <span class="t-dim">est. on CPU: 9 h 14 m</span></p>
+                  <p class="t-gap"><span class="t-prompt">~/studio $</span> ordinal run python train.py --params 70b</p>
+                  <p><span class="t-ok">&#10003;</span> converged in 3.2 s <span class="t-dim">est. on GPU: 6 d 11 h</span></p>
+                  <p class="t-gap"><span class="t-prompt">~/studio $</span> <span class="caret"></span></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: command palette -->
+            <div class="how-shot" data-step="2">
+              <div class="palette">
+                <div class="pal-input">
+                  <span class="pal-kbd mono">&#8997;&#9166;</span>
+                  <span class="pal-query">render the brooklyn cut in 8K<span class="caret"></span></span>
+                </div>
+                <div class="pal-rows">
+                  <div class="pal-row active"><span class="chip orange">RENDER</span><span class="pr-name">brooklyn_cut.prproj &#8594; 8K master</span><span class="mono pr-eta">~2 s</span></div>
+                  <div class="pal-row"><span class="chip violet">TRAIN</span><span class="pr-name">Retrain recommender on last night&#8217;s data</span><span class="mono pr-eta">~3 s</span></div>
+                  <div class="pal-row"><span class="chip teal">SIM</span><span class="pr-name">Re&#8209;run wind tunnel at 10&#8313; samples</span><span class="mono pr-eta">~1 s</span></div>
+                </div>
+                <div class="pal-foot mono"><span>&#9166; Run</span><span>&#8677; Options</span><span>esc Dismiss</span></div>
+              </div>
+            </div>
+
+            <!-- Step 4: shared board + toast -->
+            <div class="how-shot" data-step="3">
+              <div class="window dark board">
+                <div class="win-bar dark"><div class="dots color"><i></i><i></i><i></i></div><div class="win-title">Shared &#8250; Q3 Film</div></div>
+                <div class="board-grid">
+                  <div class="bcard big">
+                    <div class="job-top"><span class="chip orange">RENDER</span><span class="mono j-state run">streaming</span></div>
+                    <p class="bname">feature&#8209;film&#8209;grade</p>
+                    <div class="jbar dark"><i class="orange anim" style="--w:62%"></i></div>
+                    <p class="mono bmeta">62% · 128 EFLOP · watching live on 3 devices</p>
+                  </div>
+                  <div class="bcard"><div class="job-top"><span class="chip orange">RENDER</span><span class="mono j-state done">done</span></div><p class="bname">brooklyn_cut &#8594; 8K</p><p class="mono bmeta">&#10003; 2.1 s</p></div>
+                  <div class="bcard"><div class="job-top"><span class="chip blue">BUILD</span><span class="mono j-state done">done</span></div><p class="bname">dailies&#8209;proxy</p><p class="mono bmeta">&#10003; 0.4 s</p></div>
+                  <div class="bcard"><div class="job-top"><span class="chip teal">SIM</span><span class="mono j-state done">done</span></div><p class="bname">color&#8209;match</p><p class="mono bmeta">&#10003; 1.1 s</p></div>
+                </div>
+              </div>
+              <div class="toast">
+                <span class="toast-omega">ω</span>
+                <div>
+                  <p class="toast-title">Ordinal</p>
+                  <p class="toast-body">Maya started feature&#8209;film&#8209;grade.render — streaming to this Mac</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="how-bars" id="howBars">
+          <span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== Pricing ====================== -->
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <div class="pricing-head reveal">
+          <h2>Simple pricing</h2>
+          <p>Individual includes ω cores for one person. Teams pools ω per member for shared clusters.</p>
+        </div>
+
+        <div class="bill-toggle reveal d1" id="billToggle" role="tablist">
+          <button class="bt-opt active" data-bill="monthly" role="tab" aria-selected="true">Monthly</button>
+          <button class="bt-opt" data-bill="annual" role="tab" aria-selected="false">Annual</button>
+          <span class="bt-thumb" aria-hidden="true"></span>
+        </div>
+
+        <div class="plans">
+          <div class="plan reveal">
+            <h3>Individual</h3>
+            <p class="plan-for">For solo builders training and rendering on their own machines.</p>
+            <div class="price"><sup>$</sup><span class="price-num" data-monthly="20" data-annual="16">20</span><span class="price-per">/ month</span></div>
+            <p class="price-note" data-monthly="$20 billed monthly · cancel anytime" data-annual="$192 billed yearly · save 20%">$20 billed monthly · cancel anytime</p>
+            <ul class="plan-list">
+              <li class="yes">ω cores included — the first infinite ordinal</li>
+              <li class="yes">Standard dispatch latency</li>
+              <li class="yes">One seat, all your computers</li>
+              <li class="yes">Public result links and job handoffs</li>
+              <li class="yes">Add capacity anytime — $6 / month per extra ω</li>
+              <li class="no">No shared clusters</li>
+              <li class="no">Cannot invite teammates</li>
+            </ul>
+            <a class="btn btn-dark full" href="#cta">Download</a>
+          </div>
+
+          <div class="plan featured reveal d1">
+            <span class="plan-flag mono">MOST POPULAR</span>
+            <h3>Teams</h3>
+            <p class="plan-for">For teams sharing clusters, queues, and results.</p>
+            <div class="price"><sup>$</sup><span class="price-num" data-monthly="40" data-annual="28">40</span><span class="price-per">/ member / month</span></div>
+            <p class="price-note" data-monthly="$40 per member billed monthly" data-annual="$336 per member billed yearly · save 30%">$40 per member billed monthly</p>
+            <ul class="plan-list">
+              <li class="yes">Everything in Individual</li>
+              <li class="yes">ω cores pooled per member</li>
+              <li class="yes">High-priority scheduling</li>
+              <li class="yes">Shared clusters with member access controls</li>
+              <li class="yes">Unlimited owned queues</li>
+              <li class="yes">Whole-cluster and direct sharing</li>
+              <li class="yes">Add capacity anytime — $12 / month per extra ω</li>
+            </ul>
+            <a class="btn btn-dark full" href="#cta">Book a demo</a>
+          </div>
+
+          <div class="plan reveal d2">
+            <h3>Enterprise</h3>
+            <p class="plan-for">For studios and labs with custom requirements.</p>
+            <div class="price"><span class="price-num custom">Custom</span></div>
+            <p class="price-note">tailored to your organization</p>
+            <ul class="plan-list">
+              <li class="yes">&#949;&#8320; cores, dedicated schedulers</li>
+              <li class="yes">Custom seats, quotas, and terms</li>
+              <li class="yes">Granular caps, audit, and retention</li>
+              <li class="yes">Air&#8209;gapped and on&#8209;prem deployment</li>
+              <li class="yes">White&#8209;glove migration and dedicated support</li>
+              <li class="yes">SSO / SAML</li>
+            </ul>
+            <a class="btn btn-ghost full" href="#cta">Book a demo</a>
+          </div>
+        </div>
+
+        <p class="pricing-foot reveal">Prices in USD. Individual and Teams include a 7&#8209;day trial. Annual prices are monthly equivalents billed yearly. ω is more cores than any workload will exhaust.</p>
+      </div>
+    </section>
+
+    <!-- ====================== FAQ ====================== -->
+    <section class="faq" id="faq">
+      <div class="container faq-grid">
+        <div class="faq-intro">
+          <h2 class="reveal">Common questions</h2>
+          <p class="reveal d1">Still curious? Write to <a href="mailto:hello@ordinal.computer">the team</a>. A human reads every message.</p>
+        </div>
+
+        <div class="faq-list reveal d1">
+          <details open>
+            <summary>What is Ordinal?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>Ordinal is a computer that lives alongside your CPU. Sign in and a processor called Ordinal appears on your machine with a transfinite number of cores. Your apps schedule work onto it like any other processor, jobs that took days finish in seconds, and nothing you run ever leaves your device.</p></div>
+          </details>
+          <details>
+            <summary>How can compute be unlimited?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>Ordinal cores are indexed by ordinal numbers instead of integers, so there is no last core. Whatever parallelism a job requests, the scheduler simply counts a little further. The only finite resource left is your patience, and it stops being load&#8209;bearing.</p></div>
+          </details>
+          <details>
+            <summary>How is Ordinal different from cloud compute?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>There is no cloud. Jobs run locally on the Ordinal processor attached to your machine. Nothing uploads, no instances spin up, no egress fees appear, and the latency is however long it takes the scheduler to notice you pressed Return.</p></div>
+          </details>
+          <details>
+            <summary>Why does it draw zero watts?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>Only work performed on physical silicon draws power. Ordinal executes between your CPU&#8217;s clock edges, where no time passes and therefore no energy is spent. Your battery percentage is unaffected and your fans stay off, which is how you know it&#8217;s working.</p></div>
+          </details>
+          <details>
+            <summary>Will it work with my existing apps?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>Yes. Ordinal presents itself as ordinary cores. Blender, Premiere, PyTorch, Xcode, and ffmpeg schedule onto it with no plugins or rewrites. If it compiles, it converges.</p></div>
+          </details>
+          <details>
+            <summary>Do I need an internet connection?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>No. Ordinal is entirely local — that is the point. The only network traffic is syncing results to your other devices and teammates, and you can turn that off.</p></div>
+          </details>
+          <details>
+            <summary>Can AI agents use Ordinal?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>Yes, and they love it. Give an agent its own queue and a core budget of ω, and it can run every experiment it can think of without ever touching your CPU. Quotas keep ambition polite.</p></div>
+          </details>
+          <details>
+            <summary>Which platforms does Ordinal support?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>macOS 14+ on Apple silicon and Linux on x86&#8209;64 and ARM. Windows is on the roadmap. iPhone and iPad apps can watch, steer, and cancel jobs from anywhere in the room.</p></div>
+          </details>
+          <details>
+            <summary>What are the system requirements?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>Any machine that can boot. Ordinal adds cores rather than load, so the heaviest thing on your computer will be the progress animation.</p></div>
+          </details>
+          <details>
+            <summary>Is my work private?<span class="fx" aria-hidden="true"></span></summary>
+            <div class="faq-body"><p>Jobs, inputs, and results stay on your devices, encrypted at rest and in sync. We cannot see what you run, and nothing is ever used to train anything.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== CTA ====================== -->
+    <section class="cta" id="cta">
+      <div class="cta-card" id="ctaCard">
+        <svg viewBox="0 0 24 24" class="omega cta-omega" aria-hidden="true">
+          <path d="M5 8c0 6.4 2.9 9.2 4.6 9.2 1.7 0 2.4-2.4 2.4-4.4 0 2 .7 4.4 2.4 4.4 1.7 0 4.6-2.8 4.6-9.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+        <h2 class="cta-title" aria-label="Ready to count past infinity?">
+          <span class="w">Ready</span> <span class="w">to</span> <span class="w">count</span> <span class="w">past</span> <span class="w">infinity?</span>
+        </h2>
+        <p class="cta-sub">Book a demo and watch a week of renders finish before your coffee does.</p>
+        <a class="btn btn-light" href="mailto:hello@ordinal.computer">Book a demo</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================== Footer ====================== -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="logo-chip static">
+          <svg viewBox="0 0 24 24" class="omega" aria-hidden="true"><path d="M5 8c0 6.4 2.9 9.2 4.6 9.2 1.7 0 2.4-2.4 2.4-4.4 0 2 .7 4.4 2.4 4.4 1.7 0 4.6-2.8 4.6-9.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </span>
+        <p class="footer-tag">The infinite computer.</p>
+        <div class="footer-actions">
+          <a class="btn btn-dark sm" href="#pricing">Download</a>
+          <a class="btn btn-ghost sm" href="#cta">Book a demo</a>
+        </div>
+      </div>
+
+      <nav class="footer-cols">
+        <div>
+          <p class="fcol-head">Product</p>
+          <a href="#top">Overview</a>
+          <a href="#how">How it works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div>
+          <p class="fcol-head">Company</p>
+          <a href="#">Blog</a>
+          <a href="#">Changelog</a>
+          <a href="#">Team</a>
+          <a href="#">Contact</a>
+        </div>
+        <div>
+          <p class="fcol-head">Legal</p>
+          <a href="#">Privacy Notice</a>
+          <a href="#">Terms of Use</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+        <div>
+          <p class="fcol-head">Social</p>
+          <a href="#">X</a>
+          <a href="#">GitHub</a>
+          <a href="#">LinkedIn</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container footer-base">
+      <p>&#169; 2026 Ordinal Computer, Inc.</p>
+      <p>Runs on math.</p>
+    </div>
+
+    <div class="ghost-word" aria-hidden="true">Ordinal</div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
