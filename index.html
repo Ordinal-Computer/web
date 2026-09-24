@@ -1,531 +1,1358 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ordinal | Infinite compute on your computer.</title>
-  <meta name="description" content="One command runs your renders, exports, and builds on thousands of cloud machines. The results land back in your folder as if your laptop did it.">
-  <meta name="theme-color" content="#ffffff">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://ordinalcomputer.com">
-  <meta property="og:title" content="Ordinal | Infinite compute on your computer.">
-  <meta property="og:description" content="One command runs your renders, exports, and builds on thousands of cloud machines. The results land back in your folder as if your laptop did it.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%230a0a0a'/%3E%3Cpath d='M9 11c0 7 3.2 10 5 10 1.8 0 2-2.6 2-4.6 0 2 .2 4.6 2 4.6 1.8 0 5-3 5-10' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <script>document.documentElement.classList.replace("no-js","js")</script>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,300..700&family=Google+Sans+Code:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ordinal | Infinite compute for any computer</title>
+<meta name="description" content="Renders, exports, builds and test suites run on a GPU instead of your laptop. The results arrive in the folder you are already working in.">
+<link rel="canonical" href="https://www.ordinalcomputer.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.ordinalcomputer.com/">
+<meta property="og:title" content="Ordinal | Infinite compute for any computer">
+<meta property="og:description" content="Renders, exports, builds and test suites run on a GPU instead of your laptop. The results arrive in the folder you are already working in.">
+<meta property="og:image" content="https://www.ordinalcomputer.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Infinite compute for any computer">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ordinal | Infinite compute for any computer">
+<meta name="twitter:description" content="Renders, exports, builds and test suites run on a GPU instead of your laptop. The results arrive in the folder you are already working in.">
+<meta name="twitter:image" content="https://www.ordinalcomputer.com/og-image.png">
+<link rel="icon" type="image/png" sizes="32x32" href="brand/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="brand/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,300..700&family=Google+Sans+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Spectral hero. One beam enters and disperses into a spectrum.
+   NOTE: this was once justified as "one job, many machines". That
+   claim was not true and the copy carrying it has been removed. The
+   image stays as an image, for compute and light. Do not reintroduce
+   any claim about how many machines run a job.
+   ============================================================ */
+:root{
+  --void:#06060a;          /* the ground. dark, because bloom needs somewhere to bloom */
+  --ink:#f7f6f4;
+  --body:#9b9aa6;
+  /* Two grounds, so two floors. The light field is scroll driven, which means
+     the brightness behind a given line is not a fixed thing. --dim is the
+     caption colour for text on settled ground, a section with its own near
+     opaque backdrop. --dim-lit is the same role for text sitting on live
+     light, where the ground moves under it. Do not reach for --dim over the
+     field: mark the block .over-field and the swap happens for you. */
+  --dim:#858494;        /* 5.51:1 on --void. was #6a6976, which was 3.75:1 */
+  --dim-lit:#b6b4c2;    /* 9.92:1 settled, still 4.5:1 through ~24% field bleed */
+
+  --t-display:clamp(48px,6.6vw,104px);
+  --t-3:18px; --t-4:13px; --t-5:11px;
+
+  --sans:"Google Sans Flex",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --mono:"Google Sans Code",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --col:1280px; --gutter:40px;
+
+  /* 8px rhythm. the old page had eight unrelated section paddings. */
+  --s3:24px; --s4:32px; --s6:48px; --s8:64px; --s12:96px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--void); color:var(--ink);
+  font-family:var(--sans); font-size:var(--t-3); font-weight:300;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+.m{font-family:var(--mono);font-size:var(--t-5);letter-spacing:.09em;text-transform:uppercase;
+  /* small type is where contrast fails first. this halo tracks the glyph edge,
+     so the light between the letters is untouched, and over settled ground it
+     is darkening a ground that is already near void, which costs nothing */
+  text-shadow:0 0 2px rgba(6,6,10,.95),0 0 7px rgba(6,6,10,.88)}
+
+/* ---- the contrast floor -------------------------------------------------
+   Three pieces, ordered by how little they cost the glow. None of them paints
+   over the frame, so the field at rest is exactly what it was.
+
+   .over-field  marks a block that has no backdrop of its own, so everything
+                inside it sits on live light. Inside, --dim resolves to
+                --dim-lit and every text node gets a glyph edge halo. A new
+                section either gets a settled backdrop or this class, and the
+                floor holds without anyone doing contrast arithmetic.
+   .plate       a local scrim shaped to the inline box. Because it is sized
+                off the text it follows the line at any viewport width,
+                unlike a scrim sized in percentages of its section.
+   ------------------------------------------------------------------------ */
+.over-field{--dim:var(--dim-lit)}
+/* zero specificity on purpose: anything with its own shadow wins, including
+   .m above and the gradient text reset below */
+:where(.over-field) :where(h1,h2,h3,p,li,span){
+  text-shadow:0 0 3px rgba(6,6,10,.92),0 0 14px rgba(6,6,10,.80)}
+/* text whose colour comes from a gradient supplies its own separation, and a
+   dark halo behind background-clip:text paints through the transparent glyph
+   and kills the gradient. text-shadow inherits, so this has to be said. */
+.gl{text-shadow:none}
+.plate{display:inline-block;padding:12px 20px;
+  background:radial-gradient(72% 150% at 50% 50%,
+    rgba(6,6,10,.94) 0%,rgba(6,6,10,.80) 45%,rgba(6,6,10,0) 80%)}
+/* text whose colour comes from a gradient or that carries its own coloured
+   glow supplies its own separation; a dark halo behind it fights the glow.
+   text-shadow inherits, so this has to be said rather than merely not said. */
+
+/* ---- the light field, full bleed, behind everything -------------------- */
+#field{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+/* keeps type legible over the brightest part of the spectrum without
+   flattening the glow: a soft floor, not a scrim over the whole frame */
+.veil{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(100deg, rgba(6,6,10,.97) 0%, rgba(6,6,10,.93) 26%, rgba(6,6,10,.62) 44%,
+                            rgba(6,6,10,.18) 60%, rgba(6,6,10,0) 74%),
+    linear-gradient(to bottom, rgba(6,6,10,.80) 0%, rgba(6,6,10,0) 22%),
+    linear-gradient(to top, rgba(6,6,10,.55) 0%, rgba(6,6,10,0) 18%);
+}
+
+
+/* ---- menu --------------------------------------------------------------- */
+.menu{position:fixed;inset:0;z-index:60;background:rgba(6,6,10,.93);
+  backdrop-filter:blur(18px);display:flex;align-items:center;
+  opacity:0;transition:opacity .28s ease}
+.menu.open{opacity:1}
+.menu[hidden]{display:none}
+.menu-in{display:flex;flex-direction:column;gap:2px}
+.menu-in a{color:var(--ink);text-decoration:none;font-size:clamp(28px,4.2vw,46px);
+  font-weight:300;letter-spacing:-.028em;line-height:1.3;padding:6px 0;
+  width:max-content;max-width:100%;
+  transition:opacity .2s, transform .28s cubic-bezier(.2,.7,.2,1);
+  opacity:0;transform:translateY(14px)}
+.menu.open .menu-in a{opacity:1;transform:none}
+.menu.open .menu-in a:nth-child(2){transition-delay:.04s}
+.menu.open .menu-in a:nth-child(3){transition-delay:.08s}
+.menu.open .menu-in a:nth-child(4){transition-delay:.12s}
+.menu.open .menu-in a:nth-child(n+6){transition-delay:.18s;font-size:15px;
+  color:var(--dim);letter-spacing:.01em}
+.menu-in a:hover{color:#8affd0}
+.menu-rule{height:1px;width:min(420px,60%);margin:26px 0 20px;
+  background:linear-gradient(90deg,#b9a4ff,#7fd7ff,#8affd0,#ffe6a3,transparent)}
+/* the button sits above the overlay so it can close it again */
+#menuBtn{position:relative;z-index:70}
+@media (prefers-reduced-motion:reduce){
+  .menu,.menu-in a{transition:none}
+}
+
+/* ---- the page ---------------------------------------------------------- */
+.wrap{position:relative;z-index:2;display:flex;flex-direction:column}
+.screen{min-height:100vh;display:flex;flex-direction:column}
+.sheet{width:100%;max-width:var(--col);margin:0 auto;padding:0 var(--gutter)}
+
+.hdr{display:flex;align-items:center;height:80px;gap:var(--s3)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.wordmark{font-size:17px;font-weight:500;letter-spacing:-.01em}
+.hdr .spacer{flex:1}
+.ctl{
+  font:500 var(--t-4)/1 var(--sans); color:var(--ink); text-decoration:none; cursor:pointer;
+  border:1px solid rgba(247,246,244,.26); background:transparent; border-radius:0;
+  padding:11px 18px; transition:border-color .2s, background .2s, color .2s;
+}
+.ctl:hover{border-color:var(--ink);background:rgba(247,246,244,.06)}
+.ctl.solid{background:var(--ink);color:#06060a;border-color:var(--ink)}
+.ctl.solid:hover{background:transparent;color:var(--ink)}
+
+/* the fold proper. generous, because "cluttered at the top" was the note. */
+.fold{flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:var(--s12) 0 var(--s12)}
+.eyebrow{color:var(--dim);margin:0 0 var(--s6)}
+h1{
+  font-size:var(--t-display); font-weight:300; line-height:1.0;
+  letter-spacing:-.035em; margin:0; max-width:15ch;
+}
+h1 .gl{
+  /* The headline picks up the spectrum rather than sitting on top of it, and
+     drifts through it. The gradient is drawn at twice the width of the text and
+     the window slides across it, so the colour on any one letter changes while
+     the run of the spectrum stays intact. It alternates rather than looping, so
+     there is no seam to hide, and it is slow enough that you notice it only if
+     you stay on the page. */
+  background:linear-gradient(96deg,
+    #b9a4ff 0%, #7fd7ff 22%, #8affd0 44%, #ffe6a3 66%, #ffb0a0 82%, #b9a4ff 100%);
+  background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  /* linear, and a true loop rather than a bounce. background-repeat defaults to
+     repeat, so the 200%-wide gradient tiles; moving exactly one tile width lands
+     on an identical frame, and the gradient's first and last stop are the same
+     colour, so the tile seam is continuous too. An alternate-direction version
+     has to decelerate to a stop at each end, which left it visually frozen for
+     the first ten seconds. */
+  animation:spectrum-drift 36s linear infinite;
+}
+@keyframes spectrum-drift{
+  from{background-position:0% 50%}
+  to  {background-position:200% 50%}
+}
+@media (prefers-reduced-motion:reduce){
+  h1 .gl{animation:none}
+}
+.sub{max-width:56ch;color:var(--body);margin:var(--s6) 0 0;line-height:1.55;font-size:var(--t-3)}
+.acts{display:flex;gap:12px;margin:var(--s8) 0 0;flex-wrap:wrap}
+
+
+
+/* ---- shared section shell --------------------------------------------- */
+.bay{position:relative;padding:calc(var(--s12) * 1.5) 0}
+/* the two pinned beats: held still while scroll drives them, so they need to
+   own the whole screen for the duration */
+/* one act, two panels in the same frame. Stacking them is what removes the
+   dead viewport between the bar filling and the switch arriving. */
+.act{position:relative;min-height:100vh;overflow:hidden}
+.act .panel{position:absolute;inset:0;min-height:100vh;padding:0;
+  display:flex;flex-direction:column;justify-content:center;
+  will-change:opacity,transform}
+.act .panel > .sheet{width:100%}
+#flick{opacity:0;pointer-events:none}
+/* reduced motion: no scrub runs, so the panels stack vertically as ordinary
+   sections and both are simply visible */
+.act.unstacked{overflow:visible}
+.act.unstacked .panel{position:static;opacity:1!important;pointer-events:auto!important;
+  transform:none!important;padding:calc(var(--s12) * 1.5) 0}
+.bay h2{font-size:clamp(30px,3.9vw,58px);font-weight:300;line-height:1.1;
+  letter-spacing:-.028em;margin:0}
+.bay .sub{margin-top:var(--s4)}
+/* everything below the hero sits on a settled ground so long text is crisp,
+   while the light field still bleeds through at the seams */
+.problem{background:linear-gradient(to bottom,rgba(6,6,10,0) 0%,rgba(6,6,10,.92) 16%,rgba(6,6,10,.97) 40%)}
+.flick,.proof,.truth{background:rgba(6,6,10,.97)}
+.how{background:rgba(6,6,10,.97)!important}
+
+/* ---- the wait: a bar that actually crawls as you scroll ---------------- */
+.bar-wrap{margin-top:var(--s12);max-width:760px}
+.bar-head{display:flex;justify-content:space-between;align-items:baseline;color:var(--dim)}
+.bar-clock{font-size:15px;text-transform:none;letter-spacing:0}
+.bar{margin-top:14px;height:10px;background:rgba(247,246,244,.09);overflow:hidden}
+.bar-fill{display:block;height:100%;width:0%;
+  background:linear-gradient(90deg,#4a4a55,#6a6976)}
+.bar-note{margin-top:14px;color:var(--dim)}
+
+/* ---- the switch -------------------------------------------------------- */
+.flick-grid{display:grid;grid-template-columns:1fr 300px;gap:var(--s12);align-items:center}
+.toggle-cell{text-align:center}
+/* drawn the way the app draws it: a plain pill, black when on */
+.toggle{width:132px;height:74px;border-radius:999px;background:rgba(247,246,244,.13);
+  margin:0 auto;position:relative;transition:background .5s cubic-bezier(.2,.8,.2,1)}
+.toggle .knob{position:absolute;top:7px;left:7px;width:60px;height:60px;border-radius:50%;
+  background:#f7f6f4;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.toggle.on{background:#f7f6f4}
+.toggle.on .knob{transform:translateX(58px);background:#06060a}
+.toggle-label{margin-top:20px;color:var(--dim);transition:color .4s}
+.toggle-label.on{color:var(--ink)}
+
+/* ---- proof ------------------------------------------------------------- */
+.figs{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s8);margin-top:var(--s12)}
+.fg{border-top:1px solid rgba(247,246,244,.13);padding-top:var(--s4)}
+.fv{display:block;font-size:clamp(36px,4.4vw,62px);font-weight:500;letter-spacing:-.03em;
+  color:var(--ink);line-height:1}
+.fl{display:block;margin-top:16px;color:var(--body);font-size:15px;line-height:1.5;max-width:30ch}
+
+
+/* ---- the app: the one light band on a dark page -------------------------
+   Measured off the files, not felt. fleet-current.png means 239.6 of 255 and
+   task-detail.png means 246.8; #f9f9f8 is the single most common colour in
+   fleet-current at 724,628 px and its panels are #efefee. Both captures are
+   paper. The old treatment put paper on near black behind a 1px border at 13%
+   alpha, which is a 17:1 step across one hairline, and that is why two true
+   captures read as lightboxes punched through a wall.
+
+   So the section stops being a dark wall with two white rectangles glued to
+   it. It becomes a light band opened in the dark page along two drawn
+   spectral seams. AESTHETIC.md: a surface may be inverted only when it
+   carries the thing the section is about, and the page is on paper when it is
+   about your folder. Every other section here is the machine register. This
+   one is the app sitting beside your tools, so it is the paper register, and
+   it is the only one on the page.
+
+   The stage is deliberately NOT a match for the app's own ground. At #ecebe7,
+   one step under the app chrome, the shots dissolved into it: 1.04:1 against
+   the capture's own panel ground, so a reader could not see where the
+   screenshot ended. #e3e1da is 1.14:1 against those panels and 1.24:1 against
+   the chrome, which is a mat around a print rather than more of the print,
+   and the rule plus the cast shadow finish the edge.
+
+   The field is untouched. Nothing in the three.js module changes, and at this
+   scroll depth the field was already gone: .how paints .97 and .truth .985,
+   so this band replaces a wall that was opaque already.
+   ------------------------------------------------------------------------ */
+.app{
+  /* token scope, the same mechanism .over-field uses at the top of this file.
+     Everything inside keeps saying var(--ink) / var(--body) / var(--dim) and
+     resolves onto the light floor with no per-element rewriting. Measured on
+     --stage: 14.66:1, 6.75:1 and 5.77:1, all clear of the 5.51:1 floor this
+     page set when it raised --dim off #6a6976. AESTHETIC.md's --dim of
+     #86837c is deliberately not imported: it is 3.2:1 here, which is the bug
+     this page already fixed once. */
+  --stage:#e3e1da;
+  --rule:#bfbab0;
+  --ink:#0f0f0e;
+  --body:#4d4a44;
+  --dim:#57544e;
+
+  background:var(--stage);
+  color:var(--ink);
+  /* fully opaque, so this is settled ground in this page's terms: no
+     .over-field and no --dim-lit, because nothing moves under it. */
+
+  /* light spilling onto the dark page above and below, so the band reads as a
+     lit plane behind the page rather than a hole cut in it. The spread is
+     kept small so the spill reaches the viewport edges instead of dying in
+     from them. z-index because .truth is a later sibling and would otherwise
+     paint its .985 ground over the lower spill; that spill lands inside
+     .truth's top padding, so nothing collides. */
+  z-index:1;
+  box-shadow:0 -28px 56px -14px rgba(247,246,244,.15),
+             0  28px 56px -14px rgba(247,246,244,.15);
+
+  /* body sets antialiased, which is right for light type on a dark ground and
+     renders dark type on a light ground visibly thin in Chrome on macOS. Give
+     the band back the platform default. */
+  -webkit-font-smoothing:auto;
+  -moz-osx-font-smoothing:auto;
+}
+
+/* the two seams. A drawn edge, in the page's own spectrum, the same device
+   .bar-fill already uses. A hard rule says the boundary is
+   intentional; a fade would say the section lost its background. */
+.app::before,.app::after{
+  content:"";position:absolute;left:0;right:0;height:1px;z-index:2;
+  background:linear-gradient(90deg,#b9a4ff,#7fd7ff,#8affd0,#ffe6a3,#ffb0a0);
+}
+.app::before{top:0}
+.app::after{bottom:0}
+
+/* .m carries a dark glyph halo for life over the field. On paper that is a
+   smudge sitting behind dark text. */
+.app .m{text-shadow:none}
+/* weight 300 reads thinner dark-on-light than light-on-dark. Hold the same
+   optical weight as every other h2 on the page. Two classes so this does not
+   depend on source order against .bay h2. */
+.bay.app h2{font-weight:400}
+
+/* ---- the exhibits ------------------------------------------------------
+   Two assets of very different shape, 0.98:1 and 3.80:1, so they are given
+   different jobs instead of being equalised into two slabs. The wide crop is
+   the band's horizon and runs full bleed. The tall crop is an object standing
+   on the stage, with the job's own numbers set beside it as page type.
+   ------------------------------------------------------------------------ */
+/* .rail is the frame everywhere and the scroll container on narrow screens.
+   An element's own overflow does not clip its own box-shadow, so border,
+   radius and elevation live here and the img stays bare inside. It is
+   focusable because below 760px it is the only route to the rest of the
+   image, and Safari does not make overflow scrollers focusable by itself. */
+.app .rail{overflow-x:auto;overscroll-behavior-x:contain}
+.app .rail img{display:block;height:auto;width:100%;max-width:100%}
+/* insurance. The fleet img shipped carrying fleet-full.png's dimensions
+   (2240x1480) on a file that is 2196x578, which reserved a box about 476px
+   too tall and shifted the layout as it lazy loaded. The attributes are fixed
+   in the markup; these stop a wrong attribute doing it again. */
+/* no hardcoded ratio: the img's own width/height attributes give the browser
+   the correct one, and a literal here silently stretches the picture the next
+   time the capture is recropped. It was 26% too tall before this. */
+.shot-wide .rail img{aspect-ratio:auto;max-width:986px;margin:0 auto}
+.shot-wide .rail{display:flex;justify-content:center}
+.shot-tall .rail img{aspect-ratio:auto;max-width:508px}
+
+/* The 3.80:1 crop is the horizon. Full bleed: it is a direct child of the
+   section, not of .sheet, so there is no 100vw trick and no scrollbar
+   arithmetic. Capped at its own natural width so it is never upscaled, and
+   the rule is top and bottom only because the left and right edges of a full
+   bleed element are the viewport. */
+.shot-wide{margin:var(--s12) 0 0}
+.shot-wide .rail{max-width:2196px;margin:0 auto;
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  /* the strip is nearly the same value as the mat, so it needs a cast shadow
+     as well as a rule to read as a plane lying on the stage */
+  box-shadow:0 22px 40px -26px rgba(15,15,14,.50)}
+.shot-wide figcaption{margin-top:20px;color:var(--dim)}
+.shot-wide figcaption b{color:var(--ink);font-weight:500}
+
+/* The 0.98:1 crop is an object on the stage. One shadow, because a window is
+   a lit object on a sheet. */
+.shot-tall{display:grid;grid-template-columns:minmax(0,620px) 1fr;
+  gap:var(--s8);align-items:start;margin:var(--s12) 0 0}
+.shot-tall .rail{border:1px solid var(--rule);border-radius:14px;
+  box-shadow:0 26px 50px -26px rgba(15,15,14,.34),
+             0  2px  5px       rgba(15,15,14,.08)}
+.shot-tall figcaption{margin:0}
+.shot-tall figcaption p{margin:0;color:var(--body);font-size:16px;line-height:1.6;
+  border-top:1px solid var(--rule);padding-top:var(--s3)}
+
+/* The job's numbers, lifted out of the pixels into page type. The capture is
+   a 1.8x downscale, so its 14px body text lands near 8px: readable as a
+   picture of an interface, not as a table of values. These are the same three
+   values the panel beside them shows, set where they are selectable,
+   searchable and legible at any width, in the same mono and tabular figures
+   .fig .v uses in the proof section so a number here and a number there are
+   the same object. */
+.app .keys{list-style:none;margin:var(--s6) 0 0;padding:0}
+.app .keys li{border-top:1px solid var(--rule);padding-top:14px;margin-top:18px}
+.app .keys li:first-child{margin-top:0}
+.app .kv{display:block;font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-weight:500;font-size:clamp(19px,1.6vw,24px);color:var(--ink);
+  letter-spacing:-.01em;line-height:1.15;text-transform:none}
+.app .kl{display:block;margin-top:9px;color:var(--dim)}
+
+/* overflow affordance, replacing the two "swipe to see" lines. The gradient is
+   attached to the scrolling box, so it sits at the right edge only while there
+   is more to reach, and disappears once the image fits. */
+.app .rail{
+  background:
+    linear-gradient(to left, var(--stage), rgba(227,225,218,0)) right center / 46px 100% no-repeat,
+    linear-gradient(to right, var(--stage), rgba(227,225,218,0)) left center / 46px 100% no-repeat;
+  background-attachment:local, local;
+}
+
+@media (max-width:900px){
+  .shot-tall{grid-template-columns:1fr;gap:var(--s6)}
+}
+
+/* Phone. A 3.80:1 strip at 390px is 103px tall and a 0.98:1 panel is a 0.31x
+   render. Both are illegible fitted. Keep a readable height and let the rail
+   scroll: nothing is cropped, nothing is falsified, and swiping a wide
+   capture is a known gesture. body already sets overflow-x:hidden, so the
+   page itself never scrolls sideways. */
+@media (max-width:760px){
+  .app .rail img{width:auto;max-width:none}
+  .shot-wide .rail img{height:clamp(190px,52vw,300px)}
+  .shot-tall .rail img{height:min(78vh,620px)}
+}
+
+@media (forced-colors:active){
+  .app::before,.app::after{background:none;height:0;border-top:1px solid CanvasText}
+}
+
+/* ---- the honest bit ---------------------------------------------------- */
+.facts{list-style:none;margin:var(--s12) 0 0;padding:0}
+.facts li{display:grid;grid-template-columns:150px 1fr;gap:var(--s4);padding:var(--s4) 0;
+  border-top:1px solid rgba(247,246,244,.11)}
+.facts li:last-child{border-bottom:1px solid rgba(247,246,244,.11)}
+.facts span{color:var(--dim);padding-top:3px}
+.facts p{margin:0;color:var(--body);line-height:1.55;font-size:16px;max-width:58ch}
+
+/* ---- the ask ----------------------------------------------------------- */
+.close{padding:calc(var(--s12) * 2) 0;text-align:center;position:relative;isolation:isolate}
+.close::before{content:"";position:absolute;inset:-10% -5%;pointer-events:none;z-index:-1;
+  background:radial-gradient(62% 58% at 50% 44%,
+    rgba(6,6,10,.94) 0%, rgba(6,6,10,.86) 38%, rgba(6,6,10,.52) 64%, rgba(6,6,10,0) 84%)}
+.close-title{font-size:clamp(40px,7vw,104px);line-height:1.0;letter-spacing:-.035em}
+.close .acts{justify-content:center;margin-top:var(--s8)}
+.ctl.big{padding:17px 34px;font-size:15px}
+/* The section scrim (.close::before) is sized in percentages of .close, and
+   .close halves in height at the 900px breakpoint because --s12 drops 96 to
+   64. So the scrim shrinks exactly where the note grows to two full width
+   lines. Keep ::before, which does real work on desktop, and let .plate in
+   the markup carry the phone case, since it is sized off the line itself. */
+.close-note{margin-top:var(--s6);color:#d4d2dc;font-size:15px;line-height:1.5;
+  text-shadow:0 0 3px rgba(6,6,10,.96),0 0 12px rgba(6,6,10,.90)}
+
+.site-foot{background:rgba(6,6,10,.98);border-top:1px solid rgba(247,246,244,.10);
+  padding:var(--s6) 0}
+.foot-row{display:flex;gap:var(--s6);flex-wrap:wrap;color:var(--dim)}
+/* the links were byte identical to the copyright line beside them: same
+   colour, same size, no underline. hover was the only difference, which
+   keyboard and touch users never see */
+.foot-row a{color:var(--body);text-decoration:underline;
+  text-decoration-color:rgba(155,154,166,.5);text-underline-offset:3px}
+.foot-row a:hover{color:var(--ink);text-decoration-color:currentColor}
+.foot-row a[href^="mailto"]{text-transform:none;letter-spacing:.02em}
+
+
+
+
+/* ---- the gauge: an instrument, not a div with a background --------------- */
+.gauge{margin-top:var(--s12);max-width:880px;position:relative;
+  border:1px solid rgba(247,246,244,.13);padding:22px 24px 18px;
+  background:linear-gradient(180deg,rgba(247,246,244,.030),rgba(247,246,244,0))}
+/* corner ticks, so it reads as a measuring device */
+.gauge::before,.gauge::after{content:"";position:absolute;width:9px;height:9px;
+  border:1px solid rgba(247,246,244,.30)}
+.gauge::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.gauge::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.gauge-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.gh-label{color:var(--body)}
+.gh-state{color:var(--dim);transition:color .4s}
+.gh-state.hot{color:#ffb0a0}
+
+.bar{position:relative;margin:18px 0 14px;height:34px;
+  background:rgba(247,246,244,.055);overflow:hidden}
+/* the scale sits under the fill so the fill reads as covering ground */
+.bar-scale{position:absolute;inset:0;
+  background:repeating-linear-gradient(to right,
+    rgba(247,246,244,.20) 0 1px, transparent 1px 10%)}
+.bar-fill{position:absolute;left:0;top:0;bottom:0;width:0%;
+  /* full spectrum at the start, draining to grey as the wait drags on */
+  background:linear-gradient(90deg,#b9a4ff 0%,#7fd7ff 22%,#8affd0 44%,#ffe6a3 68%,#8d8a93 100%)}
+.bar-edge{position:absolute;right:0;top:0;bottom:0;width:2px;background:#fff;
+  box-shadow:0 0 14px 3px rgba(255,255,255,.65);opacity:.95}
+/* a slow sheen crossing the filled part, so a stalled bar still looks alive,
+   which is exactly the feeling this section is about */
+.bar-fill::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);
+  transform:translateX(-100%);animation:sheen 2.6s ease-in-out infinite}
+@keyframes sheen{to{transform:translateX(100%)}}
+
+.gauge-foot{display:flex;justify-content:space-between;align-items:baseline;color:var(--dim)}
+.gf-mid{display:flex;align-items:baseline;gap:9px}
+.gf-mid b{font-size:19px;color:var(--ink);font-weight:500;letter-spacing:.01em}
+
+/* ---- the switch, given some physics ------------------------------------- */
+.toggle{box-shadow:inset 0 0 0 1px rgba(247,246,244,.10);
+  transition:background .5s cubic-bezier(.2,.8,.2,1), box-shadow .6s}
+.toggle.on{box-shadow:0 0 0 1px rgba(247,246,244,.55),
+                     0 0 42px 6px rgba(150,190,255,.34),
+                     0 0 90px 22px rgba(130,120,255,.18)}
+.toggle .knob{box-shadow:0 2px 10px rgba(0,0,0,.5)}
+
+/* ---- steps: each rule draws itself in, in its own part of the spectrum --- */
+
+/* ---- proof: the figures carry the spectrum ------------------------------ */
+.fg{position:relative;border-top:1px solid rgba(247,246,244,.10);padding-top:var(--s6)}
+.fg::before{content:"";position:absolute;top:-1px;left:0;height:1px;width:0;
+  transition:width 1.2s cubic-bezier(.2,.7,.2,1) .15s;
+  background:linear-gradient(90deg,#7fd7ff,#8affd0)}
+.fg.in::before{width:100%}
+.fg:nth-child(2)::before{background:linear-gradient(90deg,#8affd0,#ffe6a3)}
+.fg:nth-child(3)::before{background:linear-gradient(90deg,#ffe6a3,#ffb0a0)}
+.fv{background:linear-gradient(170deg,#ffffff 0%,#cfe2ff 55%,#a9b6ff 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 30px rgba(150,180,255,.22))}
+
+/* ---- the honest section stays plain on purpose, just better set --------- */
+.facts li{position:relative;padding-left:20px}
+.facts li::before{content:"";position:absolute;left:0;top:calc(var(--s4) + 4px);
+  width:2px;height:14px;background:rgba(247,246,244,.30)}
+
+/* ---- the close ---------------------------------------------------------- */
+.close-title .gl{filter:drop-shadow(0 0 44px rgba(150,140,255,.30))}
+
+/* ---- section seams: let the light through instead of flat black --------- */
+.proof{background:
+  linear-gradient(to bottom,rgba(6,6,10,.99) 0%,rgba(6,6,10,.90) 50%,rgba(6,6,10,.99) 100%)}
+/* .flick is split off from .proof: it is the one section with no veil behind
+   its right column, because the 100deg gradient has reached its transparent
+   stop out there, and the toggle label is the only small text on the page
+   sitting in it. The .90 window stays, it just moves up to the headline rows,
+   which are --ink, instead of landing on the label. */
+.flick{background:
+  linear-gradient(to bottom,rgba(6,6,10,.99) 0%,rgba(6,6,10,.90) 34%,
+                            rgba(6,6,10,.97) 62%,rgba(6,6,10,.99) 100%)}
+.truth{background:rgba(6,6,10,.985)}
+
+/* ---- reveal, driven by ScrollTrigger ----------------------------------- */
+.rv{opacity:0;transform:translateY(22px);
+  transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .flick-grid{grid-template-columns:1fr;gap:var(--s8)}
+  .figs{grid-template-columns:1fr;gap:var(--s6)}
+  .facts li{grid-template-columns:1fr;gap:6px}
+  .bay{padding:var(--s12) 0}
+  /* .bay padding goes from 1.5x --s12 to 1x and --s12 goes 96 to 64, a 2.25x
+     drop, while the ramp below stays a percentage of a section that barely
+     shrank. The eyebrow therefore lands inside the ramp instead of below it.
+     Land the ramp above the content. 7% of ~678px is ~47px, clear of the
+     eyebrow at 64px, and at phone scale that still reads as a bleed. */
+  .problem{background:linear-gradient(to bottom,
+    rgba(6,6,10,0) 0%,rgba(6,6,10,.92) 7%,rgba(6,6,10,.97) 22%)}
+}
+
+/* ---- what it does ------------------------------------------------------ */
+/* the glow keeps bleeding at the top edge so the transition stays continuous,
+   then settles to near solid so long-form text is properly legible */
+.how{position:relative;padding:var(--s12) 0 calc(var(--s12) * 1.4);
+  background:linear-gradient(to bottom, rgba(6,6,10,0) 0%, rgba(6,6,10,.90) 14%, rgba(6,6,10,.97) 34%);}
+.how h2{font-size:clamp(30px,3.5vw,50px);font-weight:300;line-height:1.14;
+  letter-spacing:-.025em;margin:0}
+.how .sub{margin-top:var(--s4)}
+
+.how .acts{margin-top:var(--s8)}
+
+@media (max-width:760px){
+}
+
+@media (max-width:900px){
+  :root{--gutter:24px;--s12:64px;--s8:48px}
+  h1{max-width:none}
+}
+@media (max-width:620px){
+  :root{--gutter:20px}
+  .hdr{height:64px}
+  .acts .ctl{flex:1;text-align:center}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---- focus, with its own ground ----------------------------------------
+   Every indicator here was the user agent's: a 1px amber ring at 1px offset,
+   drawn straight onto a surface whose luminance changes as you scroll. .ctl
+   is the hard case, a transparent box with a 1px border, and the worst spot
+   is the #cta button, where the field runs at its highest intensity. Carry a
+   plate of the page ground with the ring so it never depends on the field.
+   This only paints while something is focused, so the rest state is unchanged. */
+:where(a,button,[tabindex]):focus-visible{
+  outline:2px solid var(--ink); outline-offset:3px;
+  box-shadow:0 0 0 6px rgba(6,6,10,.85);
+}
+@media (forced-colors:active){
+  :where(a,button,[tabindex]):focus-visible{outline-color:Highlight}
+}
+
+/* ---- gradient text needs a colour to fall back to ------------------------
+   On h1 .gl the glyph colour comes only from a background gradient, with
+   color:transparent as a separate declaration. If the gradient does not paint,
+   the transparent survives and half the headline is simply gone rather than
+   unstyled. Paint a real colour first, clear it only where the clip actually
+   works, and put it back where background images are stripped.
+
+   .close-title .gl is deliberately absent from the transparent list. It has no
+   background gradient at all, only a drop-shadow, so clearing its colour would
+   erase "you think." in every browser. */
+h1 .gl{color:var(--ink)}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  h1 .gl{color:transparent}
+}
+@media (forced-colors:active){
+  h1 .gl,.close-title .gl{
+    color:CanvasText;background-image:none;filter:none;
+    -webkit-background-clip:border-box;background-clip:border-box}
+}
+
+/* ---- paper --------------------------------------------------------------
+   The canvas does not print and browsers do not print background images, so
+   without this the page comes out white on white with three blank figures.
+   Flip the tokens rather than restating every colour. */
+@media print{
+  :root{--void:#fff;--ink:#111;--body:#333;--dim:#4a4a52;--dim-lit:#4a4a52}
+  #field,.veil,.close::before{display:none}
+  body{background:#fff;color:#111}
+  .problem,.flick,.proof,.truth,.site-foot,.plate{background:none}
+  /* .app carries its own opaque ground and its own token scope, so it needs
+     saying here or the product section prints as a slab. On white paper the
+     band's own --ink/--body/--dim are already the right dark values. */
+  .app{background:none;box-shadow:none}
+  .app::before,.app::after{display:none}
+  .app .rail{overflow:visible;box-shadow:none}
+  .app .rail img{width:100%;max-width:100%;height:auto}
+  .how{background:none!important}
+  .close-note{color:#222}
+  .m,.close-note,:where(.over-field) :where(h1,h2,h3,p,li,span){
+    text-shadow:none}
+  .rv{opacity:1;transform:none}
+}
+
+/* ---- the scaling law plot ---------------------------------------------- */
+#how{min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  padding-top:var(--s6);padding-bottom:var(--s6)}
+/* Stacked, this section wants about 980px and a laptop gives it 768. Because it
+   is pinned, that overflow cannot be scrolled to: the bottom of the plot and the
+   whole caption simply never appear. Side by side, the section's height is the
+   taller of the two columns rather than their sum. */
+@media (min-width:1000px){
+  .how .sheet{display:grid;grid-template-columns:0.82fr 1.18fr;
+    gap:0 var(--s8);align-items:center}
+  .how .eyebrow{grid-column:1;margin-bottom:var(--s4)}
+  .how h2{grid-column:1}
+  .how .sub{grid-column:1;max-width:44ch}
+  .how .law{grid-column:2;grid-row:1 / span 4;margin:0;max-width:none;align-self:center}
+}
+.law{margin:var(--s6) 0 0;max-width:min(960px, 104vh)}
+.law-plot{display:block;width:100%;height:auto;overflow:visible}
+.law-axis{stroke:rgba(247,246,244,.16);stroke-width:1}
+.law-gap{fill:url(#lawFill);opacity:0}
+.law-local{fill:none;stroke:rgba(247,246,244,.34);stroke-width:2;stroke-linecap:round}
+.law-ordinal{fill:none;stroke:url(#lawLine);stroke-width:3;stroke-linecap:round}
+.law-t{font-family:var(--mono);font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;fill:var(--dim)}
+.law-lab{fill:var(--body)}
+.law-ord{fill:#8affd0}
+.law-gain{fill:var(--ink);font-size:13px;opacity:0}
+.law-dot{opacity:0}
+.law-dot-local{fill:rgba(247,246,244,.55)}
+.law-dot-ord{fill:#8affd0}
+.law-measure{opacity:0}
+.law-measure line{stroke:rgba(247,246,244,.42);stroke-width:1}
+.law-ax{font-size:11px;fill:var(--dim)}
+.law figcaption{margin-top:12px;font-size:10px;color:var(--dim);
+  text-transform:none;letter-spacing:.03em}
+@media (max-width:620px){ .law-t{font-size:16px} }
+@media print{ .law-gap,.law-gain{opacity:1} }
+</style>
 </head>
-<body id="top">
+<body>
 
-  <a class="skip-link" href="#main">Skip to content</a>
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
 
-  <!-- ====================== Header ====================== -->
-  <header class="site-header" id="siteHeader">
-    <a class="logo-chip" href="#top" id="logoHome" aria-label="Back to top">
-      <canvas class="logo-3d" id="logoCanvas" aria-hidden="true"></canvas>
-      <svg viewBox="0 0 24 24" class="omega" aria-hidden="true">
-        <path d="M5 8c0 6.4 2.9 9.2 4.6 9.2 1.7 0 2.4-2.4 2.4-4.4 0 2 .7 4.4 2.4 4.4 1.7 0 4.6-2.8 4.6-9.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-        <path class="omega-spark" d="M5 8c0 6.4 2.9 9.2 4.6 9.2 1.7 0 2.4-2.4 2.4-4.4 0 2 .7 4.4 2.4 4.4 1.7 0 4.6-2.8 4.6-9.2" pathLength="100" fill="none" stroke-width="2.4" stroke-linecap="round"/>
-      </svg>
-    </a>
 
-    <button class="menu-pill" id="menuBtn" aria-expanded="false" aria-controls="menuOverlay">
-      <span class="menu-icon" aria-hidden="true"><i></i><i></i></span>
-      <span class="menu-label" id="menuLabel">Menu</span>
-    </button>
+<!-- ============ menu ============ -->
+<div class="menu" id="menu" hidden>
+  <nav class="menu-in sheet" aria-label="Site">
+    <a href="#how"   data-jump>What it does</a>
+    <a href="#app"   data-jump>The app</a>
+    <a href="#truth" data-jump>Where we are</a>
+    <a href="#cta"   data-jump>Get in touch</a>
+    <span class="menu-rule" aria-hidden="true"></span>
+    <a href="/terms/">Terms of Use</a>
+    <a href="/privacy/">Privacy Policy</a>
+    <a href="mailto:hello@ordinalcomputer.com">hello@ordinalcomputer.com</a>
+    <a href="https://www.linkedin.com/company/ordinal-computer/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://discord.gg/NhX4sgxDQ3" target="_blank" rel="noopener">Discord</a>
+  </nav>
+</div>
 
-    <a class="btn btn-dark header-demo" id="headerDemo" href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener">Book a demo</a>
-  </header>
-
-  <!-- ====================== Menu overlay ====================== -->
-  <div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="Site menu" aria-hidden="true">
-    <div class="menu-inner">
-      <nav class="menu-nav">
-        <a href="#top" data-menu-link>Overview</a>
-        <a href="#how" data-menu-link>How it works</a>
-        <a href="#pricing" data-menu-link>Pricing</a>
-        <a href="#faq" data-menu-link>Questions</a>
-      </nav>
-      <div class="menu-actions">
-        <a class="btn btn-dark" href="#pricing" data-menu-link>Download</a>
-        <a class="btn btn-ghost" href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener" data-menu-link>Book a demo</a>
-      </div>
-      <p class="menu-foot mono">macOS &amp; Linux · your folder, everywhere</p>
-    </div>
+<div class="wrap">
+  <!-- .screen has no backdrop of its own: only the veil sits between this
+       block and the field, so it is marked .over-field -->
+  <div class="screen over-field">
+  <div class="sheet">
+    <header class="hdr">
+      <a class="brand" href="/">
+        <img class="mark" src="brand/omega-light.png" width="30" height="24" alt="" decoding="async">
+        <span class="wordmark">Ordinal</span>
+      </a>
+      <span class="spacer"></span>
+      <a class="ctl solid" href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener">Book a demo</a>
+      <button class="ctl" id="menuBtn" aria-expanded="false" aria-controls="menu">Menu</button>
+    </header>
   </div>
 
-  <main id="main">
+  <div class="sheet fold">
+    <h1>Infinite compute<br><span class="gl">for any computer</span></h1>
+    <p class="sub">
+      Renders, exports, builds and tests run on a GPU instead of your laptop. The results
+      arrive in the folder you were already working in, as though your machine had made them.
+    </p>
+    <div class="acts">
+      <a class="ctl solid" href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener">Book a demo</a>
+      <a class="ctl" href="#how">See how it works</a>
+    </div>
+  </div>
+  </div>
 
-    <!-- ====================== Hero ====================== -->
-    <section class="hero">
-      <canvas class="hero-field" id="heroField" aria-hidden="true"></canvas>
 
-      <div class="container hero-copy">
-        <h1 class="reveal">Infinite compute<br><span class="dim">on any computer</span></h1>
-        <p class="hero-sub reveal d1">One command sends your renders, exports, and builds to thousands of cloud machines. The results land back in your folder as if your laptop did it, in a fraction of the time.</p>
-        <div class="hero-actions reveal d2">
-          <a class="btn btn-dark" href="#pricing">Download</a>
-          <a class="btn btn-ghost" href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener">Book a demo</a>
+  <!-- ============ act one: the wait, then the switch ============ -->
+  <div class="act" id="act1">
+  <section class="bay problem panel" id="problem">
+    <div class="sheet">
+      <h2>A thought that waits<br>is one you never had.</h2>
+        
+        <p class="sub">
+          Our human nature means limited mental capacity, and a limited life to spend it in. Of
+          all the things we dream to do, the photography, the video, the development, the thoughts
+          that wait in limbo are the ones that get forgotten. And they accumulate, until the
+          waiting is no longer counted in minutes but in years.
+        </p>
+        <p class="sub">
+          Steve Jobs once made the case that a loading time one second faster, across millions of
+          machines, saves a million seconds. At some point, that is lives. We do not say we save
+          lives. We say we save time, and with it a large portion of what you can do with your life.
+        </p>
+
+      <div class="gauge">
+        <div class="gauge-head">
+          <span class="m gh-label">Rendering &middot; this machine</span>
+          <span class="m gh-state" id="barNote">Your machine, unavailable</span>
+        </div>
+
+        <div class="bar">
+          <span class="bar-scale" aria-hidden="true"></span>
+          <span class="bar-fill" id="barFill"><i class="bar-edge"></i></span>
+        </div>
+
+        <div class="gauge-foot">
+          <span class="m">00:00</span>
+          <span class="gf-mid"><b class="q" id="barClock">00:00</b><span class="m">elapsed</span></span>
+          <span class="m">94:00</span>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ====================== Pinned console demo ====================== -->
-    <section class="demo" id="demo">
-      <div class="demo-pin">
-        <p class="demo-caption mono">&#9654;&nbsp; One command out. Results back in your folder.</p>
-
-        <div class="demo-panel" id="demoPanel">
-          <div class="window demo-app">
-            <div class="win-bar">
-              <div class="dots"><i></i><i></i><i></i></div>
-              <div class="win-title">Ordinal</div>
-              <div class="win-tools mono"><span>4,096 cores attached</span></div>
-            </div>
-            <div class="win-body">
-              <aside class="sidebar">
-                <p class="side-label">Adapters</p>
-                <a class="side-item active"><i class="si dot green"></i>Terminal</a>
-                <a class="side-item"><i class="si dot gray"></i>Blender <span class="soon mono">soon</span></a>
-                <a class="side-item"><i class="si dot gray"></i>FFmpeg <span class="soon mono">soon</span></a>
-                <p class="side-label">Today</p>
-                <a class="side-item"><i class="si dot orange"></i>Renders</a>
-                <a class="side-item"><i class="si dot blue"></i>Encodes</a>
-                <a class="side-item"><i class="si dot violet"></i>Builds</a>
-                <a class="side-item"><i class="si dot teal"></i>Tests</a>
-              </aside>
-              <div class="content">
-                <div class="jobs-list">
-                  <div class="jrow focus">
-                    <span class="chip orange">RENDER</span>
-                    <div class="jinfo">
-                      <p class="jname">scene.blend</p>
-                      <p class="mono jmeta">blender -b scene.blend -a</p>
-                      <p class="mono jdetail st2">sent 2.1 MB · only the bytes you touched · est. this Mac 6h 12m</p>
-                    </div>
-                    <div class="jprog">
-                      <div class="jbar"><i class="orange" id="focusBar" style="--w:89%"></i></div>
-                      <p class="mono jeta"><span class="stA">frame 214 / 240 · 11m 40s left</span><span class="stB">&#10003; 12m 04s · in renders/</span></p>
-                    </div>
-                  </div>
-
-                  <div class="jrow">
-                    <span class="chip blue">ENCODE</span>
-                    <div class="jinfo">
-                      <p class="jname">master_4k.mov &#8594; hevc</p>
-                      <p class="mono jmeta">ffmpeg -i master_4k.mov &#8230;</p>
-                    </div>
-                    <div class="jprog">
-                      <div class="jbar"><i class="blue" style="--w:84%"></i></div>
-                      <p class="mono jeta">segment 12 / 14</p>
-                    </div>
-                  </div>
-
-                  <div class="jrow">
-                    <span class="chip violet">BUILD</span>
-                    <div class="jinfo">
-                      <p class="jname">monorepo · release</p>
-                      <p class="mono jmeta">61,204 targets · cache hit 99.2%</p>
-                    </div>
-                    <div class="jprog">
-                      <div class="jbar"><i class="violet" style="--w:100%"></i></div>
-                      <p class="mono jeta done">&#10003; 4m 12s</p>
-                    </div>
-                  </div>
-
-                  <div class="jrow">
-                    <span class="chip teal">TEST</span>
-                    <div class="jinfo">
-                      <p class="jname">pytest · full suite</p>
-                      <p class="mono jmeta">2,148 passed · 0 failed</p>
-                    </div>
-                    <div class="jprog">
-                      <div class="jbar"><i class="teal" style="--w:100%"></i></div>
-                      <p class="mono jeta done">&#10003; 3m 05s</p>
-                    </div>
-                  </div>
-
-                  <div class="jrow queued">
-                    <span class="chip orange">RENDER</span>
-                    <div class="jinfo">
-                      <p class="jname">brooklyn_cut &#8594; 8K</p>
-                      <p class="mono jmeta">starts after scene.blend</p>
-                    </div>
-                    <div class="jprog">
-                      <div class="jbar"><i class="orange" style="--w:4%"></i></div>
-                      <p class="mono jeta">queued</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="status-bar mono">
-                  <span>2 running · 2 done · sent 2.1 MB this run</span>
-                  <span class="crumb">outputs land beside your files</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- the payoff: the folder fills up like the run was local -->
-          <div class="folder-pop" id="folderPop">
-            <div class="win-bar"><div class="dots"><i></i><i></i><i></i></div><div class="win-title">renders</div><div class="win-tools mono"><span>240 items</span></div></div>
-            <div class="fp-grid mono">
-              <span>frame_0001.png</span><span>frame_0002.png</span>
-              <span>frame_0003.png</span><span>frame_0004.png</span>
-              <span>frame_0005.png</span><span>frame_0006.png</span>
-              <span>frame_0007.png</span><span class="fp-more">&#8230; 233 more</span>
-            </div>
-          </div>
-
-          <div class="scroll-pill mono" id="scrollPill">SCROLL DOWN <span class="sp-arrow">&#8595;</span></div>
+  <!-- ============ the switch ============ -->
+  <section class="bay flick panel" id="flick">
+    <div class="sheet flick-grid">
+      <div>
+        <h2>One switch, and<br>the wait stops<br>being yours.</h2>
+        
+          <p class="sub">
+            Our product is simple. You turn on one switch and the software takes it from there. It
+            detects what needs more compute, routes it to the GPUs, and it re-arrives like nothing
+            ever happened, in the exact same place you were working.
+          </p>
         </div>
+      <div class="toggle-cell">
+        <div class="toggle" id="toggle" role="img" aria-label="The Boost switch, turning on">
+          <span class="knob"></span>
+        </div>
+        <p class="toggle-label m" id="toggleLabel">Boost &middot; off</p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ====================== Statement ====================== -->
-    <section class="statement" id="statement">
-      <p class="statement-text" id="statementText">Type the command you always type. Thousands of machines run it. The results land in your folder like nothing happened.</p>
-    </section>
+  </div>
 
-    <!-- ====================== Features ====================== -->
-    <section class="features" id="features">
-      <div class="container">
-        <div class="features-head">
-          <h2 class="reveal">Never wait on a progress bar again</h2>
-          <p class="reveal d1">Ordinal takes the command you were about to run and fans it out across a fleet of cloud machines. Anything that runs in a shell works today; Blender and FFmpeg buttons are next.</p>
-        </div>
+  <!-- ============ what it actually does ============ -->
+  <section class="how" id="how">
+    <div class="sheet">
+      <p class="m eyebrow">What it does</p>
+      <h2>We propose a<br>scaling law.</h2>
+        
+      <p class="sub">
+        The bigger the work you do, the more of your life you get back.
+      </p>
+      <p class="sub">
+        Ordinal sits beside whatever you already use. We do not replace Blender, ffmpeg, or your
+        build system, and there is nothing to rewrite. Only what changed goes up, and work we
+        have done before comes straight back.
+      </p>
 
-        <div class="feature-cols">
-          <div class="fcol reveal">
-            <p class="fnum mono">01</p>
-            <h3>It feels local</h3>
-            <p>Same command, same flags, same exit code. Outputs land in the folder your scripts already read from, so nothing downstream ever notices where the work ran.</p>
-          </div>
-          <div class="fcol reveal d1">
-            <p class="fnum mono">02</p>
-            <h3>Only changes travel</h3>
-            <p>The first run uploads your project once. After an edit, only the bytes you touched leave your machine, and folders you didn&#8217;t open are recognized on sight.</p>
-          </div>
-          <div class="fcol reveal d2">
-            <p class="fnum mono">03</p>
-            <h3>Nothing runs twice</h3>
-            <p>Ask for work the fleet has already done and the finished answer comes straight back, no compute spent. The millionth render starts faster than the first.</p>
-          </div>
-        </div>
-      </div>
+      <figure class="law">
+        <svg class="law-plot" viewBox="0 0 960 430" role="img"
+             aria-label="A plot of time against the size of a job. The line for your own machine climbs steeply as the job grows. The line for Ordinal stays nearly flat. The gap between them widens, and that gap is the time you get back.">
+          <defs>
+            <linearGradient id="lawLine" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stop-color="#b9a4ff"/><stop offset="35%" stop-color="#7fd7ff"/>
+              <stop offset="70%" stop-color="#8affd0"/><stop offset="100%" stop-color="#ffe6a3"/>
+            </linearGradient>
+            <linearGradient id="lawFill" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#7fd7ff" stop-opacity="0"/>
+              <stop offset="55%" stop-color="#8affd0" stop-opacity=".12"/>
+              <stop offset="100%" stop-color="#ffe6a3" stop-opacity=".20"/>
+            </linearGradient>
+          </defs>
 
-      <div class="marquees" aria-hidden="true">
-        <div class="marquee m-left">
-          <div class="marquee-track">
-            <!-- set A -->
-            <div class="mcard"><span class="chip orange">RENDER</span><span class="mname">cathedral_interior.blend</span><span class="mono msize">12m 04s</span></div>
-            <div class="mcard"><span class="chip blue">ENCODE</span><span class="mname">master_4k &#8594; hevc</span><span class="mono msize">3m 20s</span></div>
-            <div class="mcard"><span class="chip violet">BUILD</span><span class="mname">monorepo · release</span><span class="mono msize">4m 12s</span></div>
-            <div class="mcard"><span class="chip teal">TEST</span><span class="mname">pytest · 2,148 passed</span><span class="mono msize">3m 05s</span></div>
-            <div class="mcard"><span class="chip orange">RENDER</span><span class="mname">cityscape_4k.blend</span><span class="mono msize">9m 51s</span></div>
-            <div class="mcard"><span class="chip blue">ENCODE</span><span class="mname">dailies_proxy.mov</span><span class="mono msize">58s</span></div>
-            <div class="mcard"><span class="chip violet">BUILD</span><span class="mname">llvm&#8209;stage2</span><span class="mono msize">9m 44s</span></div>
-            <div class="mcard"><span class="chip teal">TEST</span><span class="mname">integration · api</span><span class="mono msize">2m 44s</span></div>
-          </div>
-        </div>
-        <div class="marquee m-right">
-          <div class="marquee-track">
-            <div class="mcard"><span class="chip orange">RENDER</span><span class="mname">brooklyn_cut &#8594; 8K</span><span class="mono msize">14m 09s</span></div>
-            <div class="mcard"><span class="chip blue">ENCODE</span><span class="mname">podcast_ep41.wav</span><span class="mono msize">41s</span></div>
-            <div class="mcard"><span class="chip violet">BUILD</span><span class="mname">kernel · allmod</span><span class="mono msize">7m 33s</span></div>
-            <div class="mcard"><span class="chip teal">TEST</span><span class="mname">e2e · checkout</span><span class="mono msize">5m 12s</span></div>
-            <div class="mcard"><span class="chip orange">RENDER</span><span class="mname">product_hero.blend</span><span class="mono msize">6m 12s</span></div>
-            <div class="mcard"><span class="chip blue">ENCODE</span><span class="mname">archive_1080.mov</span><span class="mono msize">2m 02s</span></div>
-            <div class="mcard"><span class="chip violet">BUILD</span><span class="mname">webpack · prod</span><span class="mono msize">88s</span></div>
-            <div class="mcard"><span class="chip teal">TEST</span><span class="mname">unit · 9,412 passed</span><span class="mono msize">74s</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
+          <line class="law-axis" x1="70" y1="352" x2="880" y2="352"/>
+          <line class="law-axis" x1="70" y1="36"  x2="70"  y2="352"/>
 
-    <!-- ====================== Dark walkthrough ====================== -->
-    <section class="how" id="how" data-dark>
-      <div class="how-pin">
-        <div class="how-grid container">
-          <div class="how-copy">
-            <div class="how-step active" data-step="0">
-              <h3>Type the command you already type</h3>
-              <p>Put ordinal in front of the command you were about to run. That is the whole integration. Flags, inputs, exit codes: untouched.</p>
-            </div>
-            <div class="how-step" data-step="1">
-              <h3>Edit. Run again. Send almost nothing.</h3>
-              <p>Your project is already on the fleet, so a rerun uploads only what changed since last time. Usually a few megabytes. Sometimes nothing.</p>
-            </div>
-            <div class="how-step" data-step="2">
-              <h3>Results land like they were always there</h3>
-              <p>Outputs stream back into your folder while the fleet finishes. Open them, scrub them, ship them, exactly as if your laptop had made them.</p>
-            </div>
-            <div class="how-step" data-step="3">
-              <h3>Ask twice, compute once</h3>
-              <p>Run the same job with the same inputs and the fleet hands back the finished answer without executing anything. Reruns are free.</p>
-            </div>
-          </div>
+          <path class="law-gap" d="M70,345 C300,330 560,250 820,70 L820,292 C620,322 350,338 70,345 Z"/>
+          <path class="law-local"   d="M70,345 C300,330 560,250 820,70"/>
+          <path class="law-ordinal" d="M70,345 C350,338 620,322 820,292"/>
 
-          <div class="how-stage">
-            <!-- Step 1: first run -->
-            <div class="how-shot active" data-step="0">
-              <div class="window dark term">
-                <div class="win-bar dark"><div class="dots color"><i></i><i></i><i></i></div><div class="win-title">ordinal — zsh — 92&#215;24</div></div>
-                <div class="term-body mono">
-                  <p><span class="t-prompt">~/studio $</span> ordinal -- blender -b scene.blend -a</p>
-                  <p class="t-dim">&#8250; reading project · 3,412 files</p>
-                  <p class="t-dim">&#8250; uploading 187 MB · first run</p>
-                  <p class="t-dim">&#8250; running on 4,096 cores</p>
-                  <p><span class="t-ok">&#10003;</span> 240 frames in 12m 04s <span class="t-dim">est. this Mac: 6h 12m</span></p>
-                  <p><span class="t-ok">&#10003;</span> wrote renders/ · 240 files · exit 0</p>
-                  <p class="t-gap"><span class="t-prompt">~/studio $</span> <span class="caret"></span></p>
-                </div>
-              </div>
-            </div>
+          <!-- labels sit at the end of their own curve, tied by a dot, so neither
+               can be read against the wrong line -->
+          <circle class="law-dot law-dot-local" cx="820" cy="70" r="3.5"/>
+          <text class="law-t law-lab" x="836" y="66">On your own machine</text>
 
-            <!-- Step 2: the rerun after an edit -->
-            <div class="how-shot" data-step="1">
-              <div class="window dark term">
-                <div class="win-bar dark"><div class="dots color"><i></i><i></i><i></i></div><div class="win-title">ordinal — zsh — 92&#215;24</div></div>
-                <div class="term-body mono">
-                  <p><span class="t-prompt">~/studio $</span> ordinal -- blender -b scene.blend -a</p>
-                  <p class="t-dim">&#8250; reading project · 3,412 files</p>
-                  <p class="t-dim">&#8250; uploading 2.1 MB · <span class="t-ok2">the fleet has the rest</span></p>
-                  <p class="t-dim">&#8250; running on 4,096 cores</p>
-                  <p><span class="t-ok">&#10003;</span> 240 frames in 11m 58s</p>
-                  <p><span class="t-ok">&#10003;</span> wrote renders/ · 240 files · exit 0</p>
-                  <p class="t-gap"><span class="t-prompt">~/studio $</span> <span class="caret"></span></p>
-                </div>
-              </div>
-            </div>
+          <circle class="law-dot law-dot-ord" cx="820" cy="292" r="3.5"/>
+          <text class="law-t law-lab law-ord" x="836" y="297">On Ordinal</text>
 
-            <!-- Step 3: outputs landing + toast -->
-            <div class="how-shot" data-step="2">
-              <div class="window dark board">
-                <div class="win-bar dark"><div class="dots color"><i></i><i></i><i></i></div><div class="win-title">studio &#8250; renders</div></div>
-                <div class="board-grid">
-                  <div class="bcard big">
-                    <div class="job-top"><span class="chip orange">RENDER</span><span class="mono j-state run">landing</span></div>
-                    <p class="bname">scene.blend</p>
-                    <div class="jbar dark"><i class="orange anim" style="--w:62%"></i></div>
-                    <p class="mono bmeta">frame_0148.png just landed · 92 to go</p>
-                  </div>
-                  <div class="bcard"><div class="job-top"><span class="chip orange">RENDER</span><span class="mono j-state done">done</span></div><p class="bname">frame_0001&#8211;0147</p><p class="mono bmeta">&#10003; in renders/</p></div>
-                  <div class="bcard"><div class="job-top"><span class="chip blue">ENCODE</span><span class="mono j-state done">done</span></div><p class="bname">dailies_proxy.mov</p><p class="mono bmeta">&#10003; 58s</p></div>
-                  <div class="bcard"><div class="job-top"><span class="chip blue">ENCODE</span><span class="mono j-state done">done</span></div><p class="bname">master_4k.mov</p><p class="mono bmeta">&#10003; 3m 20s</p></div>
-                </div>
-              </div>
-              <div class="toast">
-                <span class="toast-omega">ω</span>
-                <div>
-                  <p class="toast-title">Ordinal</p>
-                  <p class="toast-body">Render finished · scene.blend · 12m 04s · outputs in renders/</p>
-                </div>
-              </div>
-            </div>
+          <!-- the gap, measured where it is widest, so the claim is dimensioned
+               rather than merely shaded -->
+          <g class="law-measure">
+            <line x1="790" y1="78" x2="790" y2="284"/>
+            <line x1="783" y1="78"  x2="797" y2="78"/>
+            <line x1="783" y1="284" x2="797" y2="284"/>
+          </g>
+          <text class="law-t law-gain" x="774" y="176" text-anchor="end">What you</text>
+          <text class="law-t law-gain" x="774" y="194" text-anchor="end">get back</text>
 
-            <!-- Step 4: the free rerun -->
-            <div class="how-shot" data-step="3">
-              <div class="window dark term">
-                <div class="win-bar dark"><div class="dots color"><i></i><i></i><i></i></div><div class="win-title">ordinal — zsh — 92&#215;24</div></div>
-                <div class="term-body mono">
-                  <p><span class="t-prompt">~/studio $</span> ordinal -- blender -b scene.blend -a</p>
-                  <p class="t-dim">&#8250; nothing changed since last run</p>
-                  <p><span class="t-ok">&#10003;</span> finished from earlier run · 0.4s <span class="t-dim">nothing executed</span></p>
-                  <p><span class="t-ok">&#10003;</span> outputs already in renders/ · exit 0</p>
-                  <p class="t-gap"><span class="t-prompt">~/studio $</span> <span class="caret"></span></p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="how-bars" id="howBars">
-          <span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ====================== Pricing ====================== -->
-    <section class="pricing" id="pricing">
-      <div class="container">
-        <div class="pricing-head reveal">
-          <h2>Simple pricing</h2>
-          <p>Hobby is free and metered. Pro adds included fleet hours. Either way you pay for compute finished, not boxes rented.</p>
-        </div>
-
-        <div class="bill-toggle reveal d1" id="billToggle" role="tablist">
-          <button class="bt-opt active" data-bill="monthly" role="tab" aria-selected="true">Monthly</button>
-          <button class="bt-opt" data-bill="annual" role="tab" aria-selected="false">Annual</button>
-          <span class="bt-thumb" aria-hidden="true"></span>
-        </div>
-
-        <div class="plans">
-          <div class="plan reveal">
-            <h3>Hobby</h3>
-            <p class="plan-for">For personal projects and the occasional heavy weekend.</p>
-            <div class="price"><sup>$</sup><span class="price-num" data-monthly="0" data-annual="0">0</span><span class="price-per">/ month</span></div>
-            <p class="price-note" data-monthly="metered · a typical render runs about $9" data-annual="metered · a typical render runs about $9">metered · a typical render runs about $9</p>
-            <ul class="plan-list">
-              <li class="yes">Pay only for compute finished</li>
-              <li class="yes">Wrap any command from the terminal</li>
-              <li class="yes">Only changes ever upload</li>
-              <li class="yes">Shared fleet and shared cache</li>
-              <li class="no">No included fleet hours</li>
-              <li class="no">Community support only</li>
-            </ul>
-            <a class="btn btn-dark full" href="#cta">Download</a>
-          </div>
-
-          <div class="plan featured reveal d1">
-            <span class="plan-flag mono">MOST POPULAR</span>
-            <h3>Pro</h3>
-            <p class="plan-for">For people whose day is shaped by how long the bar takes.</p>
-            <div class="price"><sup>$</sup><span class="price-num" data-monthly="24" data-annual="19">24</span><span class="price-per">/ month</span></div>
-            <p class="price-note" data-monthly="$24 billed monthly · cancel anytime" data-annual="$228 billed yearly · save 20%">$24 billed monthly · cancel anytime</p>
-            <ul class="plan-list">
-              <li class="yes">Everything in Hobby</li>
-              <li class="yes">10 fleet hours included, then $2.40 per hour</li>
-              <li class="yes">Priority scheduling on the fleet</li>
-              <li class="yes">Blender and FFmpeg buttons as they land</li>
-              <li class="yes">Private cache for your projects</li>
-              <li class="yes">Email support</li>
-            </ul>
-            <a class="btn btn-dark full" href="#cta">Start free trial</a>
-          </div>
-
-          <div class="plan reveal d2">
-            <h3>Studio</h3>
-            <p class="plan-for">For teams and studios running heavy work every day.</p>
-            <div class="price"><span class="price-num custom">Custom</span></div>
-            <p class="price-note">volume rates · committed capacity</p>
-            <ul class="plan-list">
-              <li class="yes">Everything in Pro</li>
-              <li class="yes">Committed capacity and throughput floors</li>
-              <li class="yes">Shared team cache and access controls</li>
-              <li class="yes">CI and render&#8209;pipeline integration</li>
-              <li class="yes">SSO, audit, and invoicing</li>
-              <li class="yes">Named support engineer</li>
-            </ul>
-            <a class="btn btn-ghost full" href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener">Book a demo</a>
-          </div>
-        </div>
-
-        <p class="pricing-foot reveal">Prices in USD. Hobby has no monthly floor, so an idle month bills zero. Annual prices are monthly equivalents billed yearly.</p>
-      </div>
-    </section>
-
-    <!-- ====================== FAQ ====================== -->
-    <section class="faq" id="faq">
-      <div class="container faq-grid">
-        <div class="faq-intro">
-          <h2 class="reveal">Common questions</h2>
-          <p class="reveal d1">Still curious? Write to <a href="mailto:hello@ordinalcomputer.com">the team</a>. A human reads every message.</p>
-        </div>
-
-        <div class="faq-list reveal d1">
-          <details open>
-            <summary>What is Ordinal?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>Ordinal runs your heaviest commands on a fleet of cloud machines. Put ordinal in front of the command you were already about to run; it ships the work out, streams progress back, and writes the results into your folder as if the run were local. Renders, exports, builds, and tests are what it&#8217;s built for.</p></div>
-          </details>
-          <details>
-            <summary>Is this just a render farm?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>A render farm is a place. You package a job, upload it, wait in a queue, download the result. Ordinal is a prefix. No packaging, no portal, no sync folder. The command you already use, finishing sooner.</p></div>
-          </details>
-          <details>
-            <summary>What leaves my machine?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>Only the inputs a job needs, encrypted in transit and at rest, deduplicated so nothing uploads twice. After the first run, an edit sends only the bytes you touched. Pin a project local&#8209;only and nothing leaves at all.</p></div>
-          </details>
-          <details>
-            <summary>What can it run today?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>Anything you can run in a shell: Blender headless, ffmpeg, compilers, test suites. Next up are the Blender and FFmpeg buttons, where the app&#8217;s own render and export buttons boost automatically.</p></div>
-          </details>
-          <details>
-            <summary>Do I need an internet connection?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>For boosted runs, yes. Without one, your command simply runs locally like it always did. Ordinal is an accelerator, not a dependency; nothing in your project breaks when the network does.</p></div>
-          </details>
-          <details>
-            <summary>Will the output be identical?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>That is the bar. Jobs run on pinned versions of the same software you run locally, and every result is checked bit for bit before it lands in your folder. If a job can&#8217;t be reproduced exactly, it runs locally instead.</p></div>
-          </details>
-          <details>
-            <summary>Which platforms does Ordinal support?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>macOS on Apple silicon and Linux on x86&#8209;64 and ARM. Windows is on the roadmap.</p></div>
-          </details>
-          <details>
-            <summary>Why not just rent a cloud box?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>You can, and then you become its part&#8209;time admin: images, drivers, syncing, idle billing. Ordinal keeps the machine out of your life. You pay for finished work, and the fleet already remembers your project from last time.</p></div>
-          </details>
-          <details>
-            <summary>What does it cost when I barely use it?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>Nothing. Hobby has no monthly floor, so an idle month bills zero. A heavy week costs more than a quiet one, exactly as it should.</p></div>
-          </details>
-          <details>
-            <summary>Is my work private?<span class="fx" aria-hidden="true"></span></summary>
-            <div class="faq-body"><p>Inputs and results are encrypted, stored deduplicated rather than under your name, and never used to train anything. We can&#8217;t see what you run, and you can wipe a project from the fleet whenever you like.</p></div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <!-- ====================== CTA ====================== -->
-    <section class="cta" id="cta">
-      <div class="cta-card" id="ctaCard">
-        <canvas class="cta-stars" id="ctaStars" aria-hidden="true"></canvas>
-        <svg viewBox="0 0 24 24" class="omega cta-omega" aria-hidden="true">
-          <path d="M5 8c0 6.4 2.9 9.2 4.6 9.2 1.7 0 2.4-2.4 2.4-4.4 0 2 .7 4.4 2.4 4.4 1.7 0 4.6-2.8 4.6-9.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <text class="law-t law-ax" x="880" y="378" text-anchor="end">Size of the job</text>
+          <text class="law-t law-ax" x="62"  y="44"  text-anchor="end">Time</text>
         </svg>
-        <h2 class="cta-title" aria-label="Stop watching progress bars.">
-          <span class="w">Stop</span> <span class="w">watching</span> <span class="w">progress</span> <span class="w">bars.</span>
-        </h2>
-        <p class="cta-sub">Install it, run the command you were dreading, and go do something else for eleven minutes.</p>
-        <a class="btn btn-light" href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener">Book a demo</a>
-      </div>
-    </section>
-  </main>
+        <figcaption class="m">This is the shape of the claim, not a measurement.</figcaption>
+      </figure>
 
-  <!-- ====================== Footer ====================== -->
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div class="footer-brand">
-        <span class="logo-chip static">
-          <svg viewBox="0 0 24 24" class="omega" aria-hidden="true"><path d="M5 8c0 6.4 2.9 9.2 4.6 9.2 1.7 0 2.4-2.4 2.4-4.4 0 2 .7 4.4 2.4 4.4 1.7 0 4.6-2.8 4.6-9.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-        </span>
-        <p class="footer-tag">Any computer, a supercomputer.</p>
-        <div class="footer-actions">
-          <a class="btn btn-dark sm" href="#pricing">Download</a>
-          <a class="btn btn-ghost sm" href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener">Book a demo</a>
-        </div>
+    </div>
+  </section>
+
+
+  <!-- ============ the app itself ============ -->
+  <section class="bay app" id="app">
+    <div class="sheet">
+      <p class="m eyebrow">The app</p>
+      <h2>It is a window, not<br>a terminal.</h2>
+        <p class="sub">
+          The world's specialists should focus on what they do best. We take care of the hassle. You
+          turn it on, and never think about pesky CLI or GPU work.
+        </p>
       </div>
 
-      <nav class="footer-cols">
-        <div>
-          <p class="fcol-head">Product</p>
-          <a href="#top">Overview</a>
-          <a href="#how">How it works</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#faq">FAQ</a>
-        </div>
-        <div>
-          <p class="fcol-head">Contact</p>
-          <a href="mailto:hello@ordinalcomputer.com">hello@ordinalcomputer.com</a>
-          <a href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener">Book a demo</a>
-          <a href="https://github.com/Ordinal-Computer/core" target="_blank" rel="noopener">GitHub</a>
-        </div>
-      </nav>
-    </div>
+    <!-- 3.80:1, so it runs full bleed as the band's horizon. Outside .sheet on
+         purpose: .bay is already a full width block, only .sheet constrains. -->
+    <figure class="shot-wide">
+      <div class="rail" tabindex="0" role="group" aria-label="Fleet screen capture">
+        <img src="app-shots/fleet-current.png" width="1972" height="411"
+             loading="lazy" decoding="async"
+             alt="The Ordinal app's Fleet screen: connected, 100 percent free, status Boost ready, hardware NVIDIA RTX A6000.">
+      </div>
+      <figcaption class="m sheet">The fleet, before you turn Boost on.</figcaption>
+    </figure>
 
-    <div class="container footer-base">
-      <p>&#169; 2026 Ordinal Computer, Inc.</p>
-      <p>Built for the 5% that matters.</p>
+    <div class="sheet">
+      <figure class="shot-tall">
+        <div class="rail" tabindex="0" role="group" aria-label="Task detail capture">
+          <img src="app-shots/task-detail.png" width="1016" height="896"
+               loading="lazy" decoding="async"
+               alt="Ordinal's detail view for a finished job: atrium.blend, finished on Ordinal in 3 minutes 12 seconds, 3.4 MB uploaded, four rendered frames written back to the out folder, and the Blender output log.">
+        </div>
+        <figcaption>
+          <ul class="keys">
+            <li><span class="kv">3m 12s</span><span class="kl m">Start to finish</span></li>
+            <li><span class="kv">3.4 MB</span><span class="kl m">Sent</span></li>
+            <li><span class="kv">out/atrium_0001.png</span><span class="kl m">Returned</span></li>
+          </ul>
+        </figcaption>
+      </figure>
     </div>
+  </section>
 
-    <div class="ghost-word" aria-hidden="true">Ordinal</div>
+  <!-- ============ the honest bit ============ -->
+  <section class="bay truth" id="truth">
+    <div class="sheet">
+      <p class="m eyebrow">Where it actually is</p>
+      <h2>So where exactly<br>are we?</h2>
+      <ul class="facts">
+        <li><span class="m">Stage</span><p>In beta. Not a finished product, and GPU compute is free for our beta testers.</p></li>
+        <li><span class="m">Hardware</span><p>Server-class GPUs. The app shows you what you are connected to.</p></li>
+        <li><span class="m">Platforms</span><p>macOS and Linux. Windows is being worked on and is not there yet.</p></li>
+        <li><span class="m">Screenshots</span><p>Real captures of what our app genuinely looks like.</p></li>
+        <li><span class="m">Getting in</span><p>No public download yet. We are in closed beta, so feel free to reach out.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ the ask ============ -->
+  <!-- .close has no backdrop either, only the radial scrim on ::before -->
+  <section class="bay close over-field" id="cta">
+    <div class="sheet">
+      <h2 class="close-title">Work at the speed<br><span class="gl">you think.</span></h2>
+      <div class="acts">
+        <a class="ctl solid big" href="https://cal.com/ethan-yip/ordinal-computer-demo" target="_blank" rel="noopener">Book a demo</a>
+      </div>
+      <p class="close-note plate">Book fifteen minutes and we will give you a demo of a job going in and out.</p>
+    </div>
+  </section>
+
+  <footer class="site-foot">
+    <div class="sheet foot-row">
+      <span class="m">&#169; 2026 Ordinal Computer</span>
+      <a class="m" href="/terms/">Terms</a>
+      <a class="m" href="/privacy/">Privacy</a>
+      <a class="m" href="mailto:hello@ordinalcomputer.com">hello@ordinalcomputer.com</a>
+      <span class="foot-gap" aria-hidden="true"></span>
+      <a class="m" href="https://www.linkedin.com/company/ordinal-computer/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="m" href="https://discord.gg/NhX4sgxDQ3" target="_blank" rel="noopener">Discord</a>
+    </div>
   </footer>
+</div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.webgpu.js",
+    "three/webgpu":  "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.webgpu.js",
+    "three/tsl":     "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.tsl.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from "three";
+import { pass } from "three/tsl";
+import { bloom } from "three/addons/tsl/display/BloomNode.js";
+
+const canvas  = document.getElementById("field");
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const forceWebGL = new URLSearchParams(location.search).has("webgl");
+const renderer = new THREE.WebGPURenderer({ canvas, antialias: true, forceWebGL });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+await renderer.init();
+window.__backend = renderer.backend.isWebGPUBackend ? "WebGPU" : "WebGL2";
+// scroll script drives these; the render loop eases toward them
+window.__field = { intensity: 1, drain: 0 };
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(0, 0, 9);
+
+// ---- the dispersion -------------------------------------------------------
+// N filaments leaving one point and fanning apart. N is chosen for how the
+// dispersion looks, nothing else. It is deliberately not a machine count and
+// no copy on the page ties it to one.
+const N = 56;
+const group = new THREE.Group();
+group.position.set(3.4, -1.15, 0);
+scene.add(group);
+
+const strands = [];
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+
+for (let i = 0; i < N; i++) {
+  const t = i / (N - 1);            // 0..1 across the fan
+  const s = t - 0.5;                // -0.5..0.5, signed distance from the axis
+
+  // violet through red, the order a prism actually puts them in
+  const hue = 0.78 - t * 0.78;
+  const col = new THREE.Color().setHSL(hue, 0.82, 0.60);
+
+  // all strands leave the same point on the left and separate as they travel
+  const curve = new THREE.CubicBezierCurve3(
+    V(-6.4, 0, 0),
+    V(-2.0, s * 0.35, s * 0.25),
+    V( 1.4, s * 3.1,  s * 1.5),
+    V( 6.8, s * 5.0,  s * 2.4)
+  );
+
+  const geo = new THREE.TubeGeometry(curve, 96, 0.012 + Math.abs(s) * 0.006, 3, false);
+  const mat = new THREE.MeshBasicMaterial({
+    color: col, transparent: true, opacity: 0.85,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  group.add(mesh);
+  strands.push({ mesh, mat, base: 0.62 + Math.abs(s) * 0.5, phase: i * 0.37, s, hue: col.clone() });
+}
+
+// the single beam before it splits, so the "one in" half of the idea reads
+const beam = new THREE.Mesh(
+  new THREE.TubeGeometry(
+    new THREE.CubicBezierCurve3(V(-9.5, 0, 0), V(-8, 0, 0), V(-7.4, 0, 0), V(-6.4, 0, 0)),
+    24, 0.03, 4, false
+  ),
+  new THREE.MeshBasicMaterial({ color: 0xffffff, blending: THREE.AdditiveBlending, depthWrite: false })
+);
+group.add(beam);
+
+// ---- bloom ----------------------------------------------------------------
+const scenePass = pass(scene, camera);
+const post = new THREE.PostProcessing(renderer);
+post.outputNode = scenePass.add(bloom(scenePass.getTextureNode(), 1.15, 0.85, 0.0));
+
+// ---- motion ---------------------------------------------------------------
+// a slow breathing drift. nothing snaps, nothing loops visibly.
+let t0 = 0, moodI = 1, moodD = 0;
+const GREY = new THREE.Color(0x55555f);
+let scroll = 0, scrollEased = 0;
+const readScroll = () => {
+  const max = Math.max(1, document.body.scrollHeight - innerHeight);
+  scroll = Math.min(1, scrollY / max);
+};
+addEventListener("scroll", readScroll, { passive: true });
+readScroll();
+
+function frame(ms) {
+  const t = ms * 0.001;
+  if (!t0) t0 = t;
+  const e = t - t0;
+
+  // ease toward the scroll target so a flung trackpad does not snap the scene
+  scrollEased += (scroll - scrollEased) * 0.06;
+
+  const mood = window.__field;
+  moodI += (mood.intensity - moodI) * 0.05;
+  moodD += (mood.drain - moodD) * 0.05;
+
+  for (const st of strands) {
+    // each filament brightens and dims out of step with its neighbours, so the
+    // fan shimmers the way dispersed light does rather than pulsing as one block
+    const shimmer = 0.55 + 0.45 * Math.sin(e * 0.5 + st.phase);
+    st.mat.opacity = st.base * shimmer * moodI;
+    // "drain" desaturates toward grey for the section about waiting
+    if (moodD > 0.01) st.mat.color.lerpColors(st.hue, GREY, moodD);
+    else st.mat.color.copy(st.hue);
+  }
+  group.rotation.z = Math.sin(e * 0.11) * 0.05 - scrollEased * 0.22;
+  group.rotation.y = Math.sin(e * 0.08) * 0.10 + scrollEased * 0.30;
+  group.position.x = 3.4 - scrollEased * 2.6;
+  group.position.y = -1.15 - scrollEased * 0.5;
+  camera.position.z = 9 + scrollEased * 2.2;
+
+  post.renderAsync();
+}
+
+if (reduced) {
+  // frame() never runs on this path, so the group keeps its constructor
+  // position: the fan stays parked at the hero extreme, far right, behind
+  // every section below the hero, and never drains through #problem. Every
+  // contrast judgement made by scrolling the animated page is therefore not
+  // valid here. Park it at the mid-scroll state the sections below were
+  // built against instead. Same dispersion, same bloom, same spectrum.
+  const MID = 0.5;
+  group.position.set(3.4 - 2.6 * MID, -1.15 - 0.5 * MID, 0);
+  camera.position.z = 9 + 2.2 * MID;
+  for (const st of strands) st.mat.opacity = st.base * 0.8;
+  post.renderAsync();
+} else {
+  renderer.setAnimationLoop(frame);
+}
+
+addEventListener("resize", () => {
+  // a minimise, or an orientation change mid-flight, can report a zero
+  // dimension. That gives the camera a NaN aspect and asks the WebGPU backend
+  // to configure a zero-sized surface, which throws. Clamp instead.
+  const w = Math.max(1, innerWidth), h = Math.max(1, innerHeight);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+});
+</script>
+
+<script>
+/* ============================================================
+   Scroll choreography. ScrollTrigger, from a CDN build, no bundler.
+   Everything here is additive: with JS off or GSAP blocked, the page
+   is a complete readable document and nothing is hidden.
+   ============================================================ */
+(function () {
+  if (!window.gsap || !window.ScrollTrigger) return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var field = function () { return window.__field || {}; };
+
+  if (reduced) {
+    // No pin and no scrub on this path, so the stacked panels have to go back
+    // into normal flow or the switch section is simply never shown.
+    document.getElementById("act1").classList.add("unstacked");
+    // still tell the story, just without the movement
+    document.getElementById("barFill").style.width = "100%";
+    document.querySelectorAll(".law-gap,.law-gain,.law-measure,.law-dot").forEach(function (e) { e.style.opacity = 1; });
+    document.querySelectorAll(".law-local,.law-ordinal").forEach(function (e) { e.style.strokeDashoffset = 0; });
+    document.getElementById("toggle").classList.add("on");
+    document.getElementById("toggleLabel").textContent = "Boost \u00b7 on";
+    document.getElementById("toggleLabel").classList.add("on");
+    document.querySelectorAll(".fv").forEach(function (el) {
+      el.textContent = el.dataset.to + el.dataset.suffix;
+    });
+    return;
+  }
+
+  // ---- section reveals ----------------------------------------------------
+  // classes are added by script, so a JS failure leaves content visible
+  document.querySelectorAll(
+    ".bay h2, .bay .sub, .bay .eyebrow, .facts li, .facts li, .gauge, .close .acts, .close-note, .app figure"
+  ).forEach(function (el) {
+    el.classList.add("rv");
+    ScrollTrigger.create({
+      trigger: el, start: "top 86%", once: true,
+      onEnter: function () { el.classList.add("in"); }
+    });
+  });
+
+  // last-resort net: nothing on this page may end up permanently invisible
+  // because an animation did not run.
+  setTimeout(function () {
+    document.querySelectorAll(".rv:not(.in)").forEach(function (el) {
+      if (el.getBoundingClientRect().top < innerHeight) el.classList.add("in");
+    });
+  }, 5000);
+
+  // ---- the wait: bar crawls with the scroll, clock counts real seconds ----
+  var fill = document.getElementById("barFill");
+  var clock = document.getElementById("barClock");
+  var note = document.getElementById("barNote");
+  var tg = document.getElementById("toggle");
+  var tl = document.getElementById("toggleLabel");
+
+  var probPanel = document.getElementById("problem");
+  var flickPanel = document.getElementById("flick");
+
+  // One pinned act. The frame is held still for the whole thing, so the visitor
+  // sits through the wait, watches it finish, and then the same continuous
+  // scroll hands straight over to the switch with nothing dead in between.
+  var narrow = innerWidth < 760;
+  var THROW = narrow ? 1700 : 2600;
+
+  ScrollTrigger.create({
+    trigger: "#act1", start: "top top", end: "+=" + THROW,
+    pin: true, pinSpacing: true, scrub: 0.5, anticipatePin: 1,
+    onUpdate: function (self) {
+      var t = self.progress;
+
+      // 0.00 - 0.52  the bar fills, and you cannot leave until it does
+      // 0.52 - 0.62  it sits at full saying "still going". The joke needs a beat.
+      // 0.62 - 0.72  handover: the wait fades out, the switch fades in
+      // 0.72 - 1.00  the switch flips and the light comes back
+      var fillP = Math.min(1, t / 0.52);
+      fill.style.width = (fillP * 100).toFixed(1) + "%";
+      var secs = Math.floor(fillP * 94 * 60);
+      clock.textContent = String(Math.floor(secs / 60)).padStart(2, "0") + ":" +
+                          String(secs % 60).padStart(2, "0");
+      var done = fillP > 0.995;
+      note.textContent = done ? "Still going" : "Your machine, unavailable";
+      note.classList.toggle("hot", done);
+
+      var hand = Math.max(0, Math.min(1, (t - 0.62) / 0.10));
+      probPanel.style.opacity = 1 - hand;
+      probPanel.style.transform = "translateY(" + (-26 * hand) + "px)";
+      flickPanel.style.opacity = hand;
+      flickPanel.style.transform = "translateY(" + (26 * (1 - hand)) + "px)";
+      flickPanel.style.pointerEvents = hand > 0.5 ? "auto" : "none";
+
+      var on = t > 0.78;
+      if (on !== tg.classList.contains("on")) {
+        tg.classList.toggle("on", on);
+        tl.textContent = on ? "Boost \u00b7 on" : "Boost \u00b7 off";
+        tl.classList.toggle("on", on);
+        if (on) {
+          gsap.to(field(), { intensity: 1.55, drain: 0, duration: 1.0, ease: "power2.out" });
+          gsap.to(field(), { intensity: 1.0, duration: 1.5, delay: 1.0 });
+        }
+      }
+
+      // the spectrum drains while you wait, and is restored by the flip above
+      if (!on) {
+        field().drain = Math.min(1, fillP * 1.2);
+        field().intensity = 1 - fillP * 0.55;
+      }
+    }
+  });
+
+
+
+  // ---- proof: the figures count up ---------------------------------------
+  document.querySelectorAll(".fv").forEach(function (el) {
+    var to = parseFloat(el.dataset.to), dp = parseInt(el.dataset.dp, 10);
+    var exact = to.toFixed(dp) + el.dataset.suffix;
+    var settle = function () { el.textContent = exact; };
+    var proxy = { n: 0 };
+    ScrollTrigger.create({
+      trigger: el, start: "top 84%", once: true,
+      onEnter: function () {
+        el.dataset.started = "1";
+        gsap.to(proxy, {
+          n: to, duration: 1.4, ease: "power2.out",
+          onUpdate: function () { el.textContent = proxy.n.toFixed(dp) + el.dataset.suffix; },
+          onComplete: settle
+        });
+        // if rAF is throttled, a background tab for instance, the tween can stall
+        // part way. Never leave a half-counted figure standing as a claim.
+        setTimeout(settle, 4000);
+      }
+    });
+  });
+
+  // a backgrounded tab throttles rAF and setTimeout together, so a counter can
+  // still be part way through when the user returns. Whenever the page becomes
+  // visible, force every figure that has started to its exact value. A number on
+  // this page is a claim, and a half-counted claim is a wrong one.
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) return;
+    document.querySelectorAll(".fv").forEach(function (el) {
+      if (el.dataset.started) {
+        el.textContent = parseFloat(el.dataset.to).toFixed(+el.dataset.dp) + el.dataset.suffix;
+      }
+    });
+  });
+
+
+  // ---- the scaling law, pinned and scrubbed ------------------------------
+  // Held still while the curves draw, so the divergence happens under your
+  // hand rather than playing once while the section slides past.
+  var plot = document.querySelector(".law-plot");
+  if (plot) {
+    var lines = [plot.querySelector(".law-local"), plot.querySelector(".law-ordinal")];
+    var lens = lines.map(function (el) {
+      var L = el.getTotalLength();
+      el.style.strokeDasharray = L;
+      el.style.strokeDashoffset = L;
+      return L;
+    });
+    var gapEl = plot.querySelector(".law-gap");
+    var gainEls = plot.querySelectorAll(".law-gain");
+    var measure = plot.querySelector(".law-measure");
+    var dots = plot.querySelectorAll(".law-dot");
+    var set = function (t) {
+      // 0.00-0.62 both curves draw, 0.55-0.80 the wedge fills,
+      // 0.72-1.00 the dimension and its label arrive
+      var d = Math.min(1, t / 0.62);
+      lines.forEach(function (el, i) { el.style.strokeDashoffset = lens[i] * (1 - d); });
+      var g = Math.max(0, Math.min(1, (t - 0.55) / 0.25));
+      gapEl.style.opacity = g;
+      dots.forEach(function (e) { e.style.opacity = d > 0.98 ? 1 : 0; });
+      var k = Math.max(0, Math.min(1, (t - 0.72) / 0.28));
+      measure.style.opacity = k;
+      gainEls.forEach(function (e) { e.style.opacity = k; });
+    };
+    set(0);
+    ScrollTrigger.create({
+      trigger: "#how", start: "top top", end: "+=" + (innerWidth < 760 ? 1100 : 1700),
+      pin: true, pinSpacing: true, scrub: 0.5, anticipatePin: 1,
+      onUpdate: function (self) { set(self.progress); }
+    });
+  }
+
+  // ---- the close: the spectrum opens back up -----------------------------
+  ScrollTrigger.create({
+    trigger: "#cta", start: "top 75%",
+    onEnter: function () { gsap.to(field(), { intensity: 1.7, duration: 1.4, ease: "power2.out" }); },
+    onLeaveBack: function () { gsap.to(field(), { intensity: 1.0, duration: 1.0 }); }
+  });
+})();
+</script>
+
+<script>
+/* ============================================================
+   Menu. Plain DOM, no library. The links that point at sections
+   have to account for pinning: a pinned section's anchor position
+   is not where ScrollTrigger actually holds it, so jumping to the
+   element lands in the wrong place. Ask ScrollTrigger instead.
+   ============================================================ */
+(function () {
+  var btn = document.getElementById("menuBtn");
+  var menu = document.getElementById("menu");
+  if (!btn || !menu) return;
+  var lastFocus = null;
+
+  function open() {
+    lastFocus = document.activeElement;
+    menu.hidden = false;
+    requestAnimationFrame(function () { menu.classList.add("open"); });
+    btn.setAttribute("aria-expanded", "true");
+    btn.textContent = "Close";
+    document.body.style.overflow = "hidden";
+    var first = menu.querySelector("a");
+    if (first) first.focus({ preventScroll: true });
+  }
+  function close(refocus) {
+    menu.classList.remove("open");
+    btn.setAttribute("aria-expanded", "false");
+    btn.textContent = "Menu";
+    document.body.style.overflow = "";
+    var done = function () { menu.hidden = true; menu.removeEventListener("transitionend", done); };
+    menu.addEventListener("transitionend", done);
+    setTimeout(done, 400);                       // in case the transition never fires
+    if (refocus && lastFocus) lastFocus.focus({ preventScroll: true });
+  }
+  var isOpen = function () { return btn.getAttribute("aria-expanded") === "true"; };
+
+  btn.addEventListener("click", function () { isOpen() ? close(true) : open(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && isOpen()) close(true);
+  });
+  menu.addEventListener("click", function (e) { if (e.target === menu) close(true); });
+
+  menu.querySelectorAll("a").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      var jump = a.hasAttribute("data-jump");
+      if (!jump) { close(false); return; }        // real page, let it navigate
+      e.preventDefault();
+      var el = document.querySelector(a.getAttribute("href"));
+      if (!el) { close(true); return; }
+      // a pinned section is held at its trigger start, not at its own offsetTop
+      var y = null;
+      if (window.ScrollTrigger) {
+        var pin = ScrollTrigger.getAll().filter(function (t) {
+          return t.pin && (t.trigger === el || (t.trigger && t.trigger.contains(el)));
+        })[0];
+        if (pin) y = pin.start;
+      }
+      if (y === null) y = el.getBoundingClientRect().top + window.scrollY;
+      close(false);
+      var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: y, behavior: reduced ? "auto" : "smooth" });
+    });
+  });
+})();
+</script>
 </body>
 </html>
