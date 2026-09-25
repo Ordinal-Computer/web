@@ -100,11 +100,15 @@ body{
 /* ---- the light field, full bleed, behind everything -------------------- */
 #field{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
 /* keeps type legible over the brightest part of the spectrum without
-   flattening the glow: a soft floor, not a scrim over the whole frame */
+   flattening the glow. The along-flow layer used to reach fully clear at 74%
+   and stay clear, so the brightest quarter of the frame had no scrim over it
+   at all. It now bottoms out at .20 and runs to the edge, which scales the fan
+   down rather than flattening it. Do not take that floor much past .25: at .36
+   the field keeps almost no pixel above L 0.30 and stops reading as light. */
 .veil{position:fixed;inset:0;z-index:1;pointer-events:none;
   background:
     linear-gradient(100deg, rgba(6,6,10,.97) 0%, rgba(6,6,10,.93) 26%, rgba(6,6,10,.62) 44%,
-                            rgba(6,6,10,.18) 60%, rgba(6,6,10,0) 74%),
+                            rgba(6,6,10,.32) 60%, rgba(6,6,10,.16) 76%, rgba(6,6,10,.20) 100%),
     linear-gradient(to bottom, rgba(6,6,10,.80) 0%, rgba(6,6,10,0) 22%),
     linear-gradient(to top, rgba(6,6,10,.55) 0%, rgba(6,6,10,0) 18%);
 }
@@ -217,7 +221,7 @@ h1 .gl{
 /* everything below the hero sits on a settled ground so long text is crisp,
    while the light field still bleeds through at the seams */
 .problem{background:linear-gradient(to bottom,rgba(6,6,10,0) 0%,rgba(6,6,10,.92) 16%,rgba(6,6,10,.97) 40%)}
-.flick,.proof,.truth{background:rgba(6,6,10,.97)}
+.flick,.proof{background:rgba(6,6,10,.97)}
 .how{background:rgba(6,6,10,.97)!important}
 
 /* ---- the wait: a bar that actually crawls as you scroll ---------------- */
@@ -274,8 +278,8 @@ h1 .gl{
    and the rule plus the cast shadow finish the edge.
 
    The field is untouched. Nothing in the three.js module changes, and at this
-   scroll depth the field was already gone: .how paints .97 and .truth .985,
-   so this band replaces a wall that was opaque already.
+   scroll depth the field was already gone: .how paints .97 above it, so this
+   band replaces a wall that was opaque already.
    ------------------------------------------------------------------------ */
 .app{
   /* token scope, the same mechanism .over-field uses at the top of this file.
@@ -299,9 +303,9 @@ h1 .gl{
   /* light spilling onto the dark page above and below, so the band reads as a
      lit plane behind the page rather than a hole cut in it. The spread is
      kept small so the spill reaches the viewport edges instead of dying in
-     from them. z-index because .truth is a later sibling and would otherwise
-     paint its .985 ground over the lower spill; that spill lands inside
-     .truth's top padding, so nothing collides. */
+     from them. z-index so a later sibling cannot paint its own ground over
+     the lower spill. The spill now lands in .close's top padding, which is
+     twice --s12 and carries no background, so nothing collides. */
   z-index:1;
   box-shadow:0 -28px 56px -14px rgba(247,246,244,.15),
              0  28px 56px -14px rgba(247,246,244,.15);
@@ -424,13 +428,6 @@ h1 .gl{
   .app::before,.app::after{background:none;height:0;border-top:1px solid CanvasText}
 }
 
-/* ---- the honest bit ---------------------------------------------------- */
-.facts{list-style:none;margin:var(--s12) 0 0;padding:0}
-.facts li{display:grid;grid-template-columns:150px 1fr;gap:var(--s4);padding:var(--s4) 0;
-  border-top:1px solid rgba(247,246,244,.11)}
-.facts li:last-child{border-bottom:1px solid rgba(247,246,244,.11)}
-.facts span{color:var(--dim);padding-top:3px}
-.facts p{margin:0;color:var(--body);line-height:1.55;font-size:16px;max-width:58ch}
 
 /* ---- the ask ----------------------------------------------------------- */
 .close{padding:calc(var(--s12) * 2) 0;text-align:center;position:relative;isolation:isolate}
@@ -520,10 +517,6 @@ h1 .gl{
   -webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 0 30px rgba(150,180,255,.22))}
 
-/* ---- the honest section stays plain on purpose, just better set --------- */
-.facts li{position:relative;padding-left:20px}
-.facts li::before{content:"";position:absolute;left:0;top:calc(var(--s4) + 4px);
-  width:2px;height:14px;background:rgba(247,246,244,.30)}
 
 /* ---- the close ---------------------------------------------------------- */
 .close-title .gl{filter:drop-shadow(0 0 44px rgba(150,140,255,.30))}
@@ -531,15 +524,14 @@ h1 .gl{
 /* ---- section seams: let the light through instead of flat black --------- */
 .proof{background:
   linear-gradient(to bottom,rgba(6,6,10,.99) 0%,rgba(6,6,10,.90) 50%,rgba(6,6,10,.99) 100%)}
-/* .flick is split off from .proof: it is the one section with no veil behind
-   its right column, because the 100deg gradient has reached its transparent
-   stop out there, and the toggle label is the only small text on the page
-   sitting in it. The .90 window stays, it just moves up to the headline rows,
-   which are --ink, instead of landing on the label. */
+/* .flick is split off from .proof: its right column gets the thinnest veil on
+   the page, because the 100deg gradient has bottomed out at .20 by then, and
+   the toggle label is the only small text on the page sitting in it. The .90
+   window stays, it just moves up to the headline rows, which are --ink,
+   instead of landing on the label. */
 .flick{background:
   linear-gradient(to bottom,rgba(6,6,10,.99) 0%,rgba(6,6,10,.90) 34%,
                             rgba(6,6,10,.97) 62%,rgba(6,6,10,.99) 100%)}
-.truth{background:rgba(6,6,10,.985)}
 
 /* ---- reveal, driven by ScrollTrigger ----------------------------------- */
 .rv{opacity:0;transform:translateY(22px);
@@ -549,7 +541,6 @@ h1 .gl{
 @media (max-width:900px){
   .flick-grid{grid-template-columns:1fr;gap:var(--s8)}
   .figs{grid-template-columns:1fr;gap:var(--s6)}
-  .facts li{grid-template-columns:1fr;gap:6px}
   .bay{padding:var(--s12) 0}
   /* .bay padding goes from 1.5x --s12 to 1x and --s12 goes 96 to 64, a 2.25x
      drop, while the ramp below stays a percentage of a section that barely
@@ -628,7 +619,7 @@ h1 .gl{color:var(--ink)}
   :root{--void:#fff;--ink:#111;--body:#333;--dim:#4a4a52;--dim-lit:#4a4a52}
   #field,.veil,.close::before{display:none}
   body{background:#fff;color:#111}
-  .problem,.flick,.proof,.truth,.site-foot,.plate{background:none}
+  .problem,.flick,.proof,.site-foot,.plate{background:none}
   /* .app carries its own opaque ground and its own token scope, so it needs
      saying here or the product section prints as a slab. On white paper the
      band's own --ink/--body/--dim are already the right dark values. */
@@ -692,8 +683,8 @@ h1 .gl{color:var(--ink)}
   <nav class="menu-in sheet" aria-label="Site">
     <a href="#how"   data-jump>What it does</a>
     <a href="#app"   data-jump>The app</a>
-    <a href="#truth" data-jump>Where we are</a>
     <a href="#cta"   data-jump>Get in touch</a>
+    <a href="/careers/">Careers</a>
     <span class="menu-rule" aria-hidden="true"></span>
     <a href="/terms/">Terms of Use</a>
     <a href="/privacy/">Privacy Policy</a>
@@ -899,20 +890,6 @@ h1 .gl{color:var(--ink)}
     </div>
   </section>
 
-  <!-- ============ the honest bit ============ -->
-  <section class="bay truth" id="truth">
-    <div class="sheet">
-      <p class="m eyebrow">Where it actually is</p>
-      <h2>So where exactly<br>are we?</h2>
-      <ul class="facts">
-        <li><span class="m">Stage</span><p>In beta. Not a finished product, and GPU compute is free for our beta testers.</p></li>
-        <li><span class="m">Hardware</span><p>Server-class GPUs. The app shows you what you are connected to.</p></li>
-        <li><span class="m">Platforms</span><p>macOS and Linux. Windows is being worked on and is not there yet.</p></li>
-        <li><span class="m">Screenshots</span><p>Real captures of what our app genuinely looks like.</p></li>
-        <li><span class="m">Getting in</span><p>No public download yet. We are in closed beta, so feel free to reach out.</p></li>
-      </ul>
-    </div>
-  </section>
 
   <!-- ============ the ask ============ -->
   <!-- .close has no backdrop either, only the radial scrim on ::before -->
@@ -929,6 +906,7 @@ h1 .gl{color:var(--ink)}
   <footer class="site-foot">
     <div class="sheet foot-row">
       <span class="m">&#169; 2026 Ordinal Computer</span>
+      <a class="m" href="/careers/">Careers</a>
       <a class="m" href="/terms/">Terms</a>
       <a class="m" href="/privacy/">Privacy</a>
       <a class="m" href="mailto:hello@ordinalcomputer.com">hello@ordinalcomputer.com</a>
@@ -979,7 +957,11 @@ camera.position.set(0, 0, 9);
 // no copy on the page ties it to one.
 const N = 56;
 const group = new THREE.Group();
-group.position.set(3.4, -1.15, 0);
+// Parked clear of the content column. The fan used to sit at (3.4, -1.15),
+// which put its bright neck directly under the sub-paragraph: that paragraph
+// measured a 19x luminance ramp from its first word to its last.
+const FAN_X = 4.6, FAN_Y = -2.4;
+group.position.set(FAN_X, FAN_Y, 0);
 scene.add(group);
 
 const strands = [];
@@ -992,24 +974,53 @@ for (let i = 0; i < N; i++) {
 
   // violet through red, the order a prism actually puts them in
   const hue = 0.78 - t * 0.78;
-  const col = new THREE.Color().setHSL(hue, 0.82, 0.60);
+  // Saturated additive neon on near black is the harshest pairing available,
+  // and "eye-hurting" was the word three people reached for. This is closer to
+  // the headline gradient, which is the same spectrum and draws no complaints.
+  const col = new THREE.Color().setHSL(hue, 0.68, 0.62);
 
   // all strands leave the same point on the left and separate as they travel
   const curve = new THREE.CubicBezierCurve3(
     V(-6.4, 0, 0),
     V(-2.0, s * 0.35, s * 0.25),
     V( 1.4, s * 3.1,  s * 1.5),
-    V( 6.8, s * 5.0,  s * 2.4)
+    V( 6.8, s * 3.9,  s * 2.0)
   );
 
-  const geo = new THREE.TubeGeometry(curve, 96, 0.012 + Math.abs(s) * 0.006, 3, false);
+  // Wide enough that neighbouring filaments overlap at the far end. At the old
+  // 0.012 they covered about 43% of their own spacing out there, so the fan
+  // resolved into 56 separate lines instead of a spectrum, and a coherent
+  // high-frequency stripe pattern is a large part of why this read as harsh.
+  const geo = new THREE.TubeGeometry(curve, 96, 0.030 + Math.abs(s) * 0.010, 3, false);
+
+  // Dispersed light spreads a fixed amount of energy over a widening area, so
+  // it has to dim as it fans. The old version held every filament at full
+  // strength along its whole length, which put 78% of the hero's light in the
+  // right half while the headline and both buttons sit in the left half.
+  // The exponent is set by eye against the captures, not derived.
+  // Under additive blending a vertex colour of black contributes nothing, so
+  // the taper rides on vertex colour and leaves material.color free for the
+  // per-strand hue and the drain lerp below.
+  const TS = 96, RS = 3;
+  const cols = new Float32Array((TS + 1) * (RS + 1) * 3);
+  for (let vi = 0; vi < (TS + 1) * (RS + 1); vi++) {
+    const u = Math.floor(vi / (RS + 1)) / TS;     // 0 at the entry, 1 at the far edge
+    const k = Math.pow(1 - u, 2.3);
+    cols[vi * 3] = cols[vi * 3 + 1] = cols[vi * 3 + 2] = k;
+  }
+  geo.setAttribute("color", new THREE.BufferAttribute(cols, 3));
+
   const mat = new THREE.MeshBasicMaterial({
-    color: col, transparent: true, opacity: 0.85,
+    color: col, vertexColors: true, transparent: true, opacity: 0.85,
     blending: THREE.AdditiveBlending, depthWrite: false,
   });
   const mesh = new THREE.Mesh(geo, mat);
   group.add(mesh);
-  strands.push({ mesh, mat, base: 0.62 + Math.abs(s) * 0.5, phase: i * 0.37, s, hue: col.clone() });
+  // frame() overwrites mat.opacity from this every tick, so base is the real
+  // brightness control and the constructor opacity above only sets frame one.
+  // Lowered to pay for the wider tubes, which overlap far more under additive
+  // blending than their radius alone suggests.
+  strands.push({ mesh, mat, base: 0.30 + Math.abs(s) * 0.24, phase: i * 0.37, s, hue: col.clone() });
 }
 
 // the single beam before it splits, so the "one in" half of the idea reads
@@ -1025,7 +1036,10 @@ group.add(beam);
 // ---- bloom ----------------------------------------------------------------
 const scenePass = pass(scene, camera);
 const post = new THREE.PostProcessing(renderer);
-post.outputNode = scenePass.add(bloom(scenePass.getTextureNode(), 1.15, 0.85, 0.0));
+// A threshold of 0 bloomed every lit pixel including the dimmest, which is
+// what turned the fan's edges into a wash across the whole right half rather
+// than a glow around its bright core.
+post.outputNode = scenePass.add(bloom(scenePass.getTextureNode(), 1.0, 0.85, 0.22));
 
 // ---- motion ---------------------------------------------------------------
 // a slow breathing drift. nothing snaps, nothing loops visibly.
@@ -1062,8 +1076,8 @@ function frame(ms) {
   }
   group.rotation.z = Math.sin(e * 0.11) * 0.05 - scrollEased * 0.22;
   group.rotation.y = Math.sin(e * 0.08) * 0.10 + scrollEased * 0.30;
-  group.position.x = 3.4 - scrollEased * 2.6;
-  group.position.y = -1.15 - scrollEased * 0.5;
+  group.position.x = FAN_X - scrollEased * 2.6;
+  group.position.y = FAN_Y - scrollEased * 0.5;
   camera.position.z = 9 + scrollEased * 2.2;
 
   post.renderAsync();
@@ -1077,7 +1091,7 @@ if (reduced) {
   // valid here. Park it at the mid-scroll state the sections below were
   // built against instead. Same dispersion, same bloom, same spectrum.
   const MID = 0.5;
-  group.position.set(3.4 - 2.6 * MID, -1.15 - 0.5 * MID, 0);
+  group.position.set(FAN_X - 2.6 * MID, FAN_Y - 0.5 * MID, 0);
   camera.position.z = 9 + 2.2 * MID;
   for (const st of strands) st.mat.opacity = st.base * 0.8;
   post.renderAsync();
@@ -1129,7 +1143,7 @@ addEventListener("resize", () => {
   // ---- section reveals ----------------------------------------------------
   // classes are added by script, so a JS failure leaves content visible
   document.querySelectorAll(
-    ".bay h2, .bay .sub, .bay .eyebrow, .facts li, .facts li, .gauge, .close .acts, .close-note, .app figure"
+    ".bay h2, .bay .sub, .bay .eyebrow, .gauge, .close .acts, .close-note, .app figure"
   ).forEach(function (el) {
     el.classList.add("rv");
     ScrollTrigger.create({
