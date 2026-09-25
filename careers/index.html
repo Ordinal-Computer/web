@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Careers | Ordinal</title>
+<meta name="description" content="Ordinal is our attempt at something that may only be possible right now. We have no openings at the moment, but we would still like to hear from you.">
+<link rel="canonical" href="https://www.ordinalcomputer.com/careers/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.ordinalcomputer.com/careers/">
+<meta property="og:title" content="Careers | Ordinal">
+<meta property="og:description" content="Nothing you make here will be the first, and nothing you make here will be the last. We believe that is real freedom.">
+<meta property="og:image" content="https://www.ordinalcomputer.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/brand/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,300..700&family=Google+Sans+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Careers. The landing page disperses one beam into a spectrum.
+   This one is about succession instead: a run of marks receding
+   to a vanishing point, leaving the frame at both ends, so there
+   is no first one and no last one. That is the argument the text
+   makes, drawn rather than stated.
+   ============================================================ */
+:root{
+  --void:#06060a; --ink:#f7f6f4; --body:#b3b1bd; --dim:#8a8896;
+  --rule:rgba(247,246,244,.11);
+  --sans:"Google Sans Flex",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --mono:"Google Sans Code",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --col:1180px; --gutter:40px;
+  /* measured, not guessed: 56ch rendered 75 to 85 characters a line.
+     50ch lands at 62 to 69, which is inside the comfortable range. */
+  --measure:50ch;
+  --s4:32px; --s6:48px; --s8:64px; --s12:96px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--void);color:var(--body);font-family:var(--sans);
+  font-size:18px;font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden}
+.m{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+  text-shadow:0 0 2px rgba(6,6,10,.95),0 0 7px rgba(6,6,10,.88)}
+.sheet{width:100%;max-width:var(--col);margin:0 auto;padding:0 var(--gutter)}
+
+#field{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;
+  will-change:opacity}
+.veil{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(100deg, rgba(6,6,10,.90) 0%, rgba(6,6,10,.66) 34%, rgba(6,6,10,.14) 66%, rgba(6,6,10,0) 100%)}
+.wrap{position:relative;z-index:2}
+
+.hdr{display:flex;align-items:center;height:80px;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.wordmark{font-size:17px;font-weight:500;letter-spacing:-.01em}
+.hdr .spacer{flex:1}
+.ctl{font:500 13px/1 var(--sans);color:var(--ink);text-decoration:none;
+  border:1px solid rgba(247,246,244,.26);padding:11px 18px;
+  transition:border-color .2s,background .2s}
+.ctl:hover{border-color:var(--ink);background:rgba(247,246,244,.06)}
+
+/* ---- the fold ---------------------------------------------------------- */
+.fold{min-height:82vh;display:flex;flex-direction:column;justify-content:center;
+  padding-block:var(--s12)}
+.eyebrow{color:var(--dim);margin:0 0 var(--s6)}
+h1{font-size:clamp(42px,6vw,88px);font-weight:300;line-height:1.02;
+  letter-spacing:-.035em;margin:0;max-width:16ch;color:var(--ink)}
+h1 .gl{background:linear-gradient(96deg,#b9a4ff 0%,#7fd7ff 30%,#8affd0 58%,#ffe6a3 84%,#ffb0a0 100%);
+  background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:drift 44s linear infinite;text-shadow:none}
+@keyframes drift{from{background-position:0% 50%} to{background-position:200% 50%}}
+
+/* ---- the manifesto ----------------------------------------------------- */
+.creed{padding-block:var(--s12) var(--s8)}
+.creed p{max-width:var(--measure);margin:0 0 30px;font-size:20px;line-height:1.72}
+.creed p:first-child{font-size:24px;color:var(--ink);line-height:1.6}
+.creed strong{color:var(--ink);font-weight:400}
+.creed .close-line{color:var(--ink);font-size:22px}
+
+/* ---- openings ---------------------------------------------------------- */
+.roles{padding-block:var(--s8) var(--s12);position:relative}
+/* the one spectral mark below the fold, same hairline the legal pages use */
+.roles::before{content:"";position:absolute;top:0;left:var(--gutter);right:var(--gutter);
+  height:1px;background:linear-gradient(90deg,#b9a4ff,#7fd7ff,#8affd0,#ffe6a3,transparent);
+  opacity:.55}
+.roles h2{font-size:clamp(26px,3vw,38px);font-weight:300;letter-spacing:-.025em;
+  color:var(--ink);margin:0 0 var(--s4);line-height:1.15}
+.roles p{max-width:var(--measure);margin:0 0 24px}
+.acts{display:flex;gap:12px;margin-top:var(--s6);flex-wrap:wrap}
+.ctl.solid{background:var(--ink);color:#06060a;border-color:var(--ink)}
+.ctl.solid:hover{background:transparent;color:var(--ink)}
+
+.site-foot{border-top:1px solid var(--rule);padding:var(--s6) 0 var(--s8);
+  background:rgba(6,6,10,.96)}
+.foot-row{display:flex;gap:26px;flex-wrap:wrap;color:var(--dim);align-items:center}
+.foot-row a{color:var(--dim);text-decoration:none}
+.foot-row a:hover{color:var(--ink)}
+.foot-gap{flex:1}
+
+@media (max-width:760px){
+  :root{--gutter:22px;--s12:64px}
+  body{font-size:17px}
+  .creed p{font-size:18px}
+  .creed p:first-child{font-size:21px}
+  /* the wide footer gap and the push spacer both fall apart once the row
+     wraps, so on narrow screens it is just a close-set list */
+  .foot-row{gap:14px 20px}
+  .foot-gap{display:none}
+  .acts{gap:10px}
+  .acts .ctl{flex:1 1 auto;text-align:center}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+
+<div class="wrap">
+  <div class="sheet">
+    <header class="hdr">
+      <a class="brand" href="/">
+        <img src="/brand/omega-light.png" width="30" height="24" alt="" decoding="async">
+        <span class="wordmark">Ordinal</span>
+      </a>
+      <span class="spacer"></span>
+      <a class="ctl" href="/">Back to site</a>
+    </header>
+  </div>
+
+  <div class="sheet fold">
+    <p class="m eyebrow">Careers</p>
+    <h1>Come make the one<br><span class="gl">after this.</span></h1>
+  </div>
+
+  <div class="sheet creed">
+    <p>Ordinal is our attempt at something that may only be possible right now. In a few years, the way people interact with computers will already have been set in concrete, and most people will forget that there was ever a choice.</p>
+
+    <p>In a world where a person with an idea can outsource the doing to a machine and receive a finished product, we were promised flight, and yet all we get are lines. Modern systems simply lack the capability and compute and bandwidth to run at the speed of thought, and so your thoughts are forced to wait. Thoughts that exist in limbo for far too long become thoughts that you never had.</p>
+
+    <p><strong>This cost is priceless.</strong> We believe it is most of what a person loses in their career.</p>
+
+    <p>On the outside, we may look like a cloud company, but we would disagree. We do not rent machines and we do not own GPUs. We have the sole mission of saving people's time, and large portions of their lives, so that they may work on meaningful things and pursue the things that they value most at the speed of thought.</p>
+
+    <p>Our industry talks as though our history is five years long, and our world speaks as though it will end tomorrow. Neither, we believe, is true. Everything being made right now has followed something, and everything being made right now is what something will follow.</p>
+
+    <p><strong>Nothing you make here will be the first, and nothing you make here will be the last.</strong> We believe that is real freedom.</p>
+
+    <p class="close-line">We like to think that everything worth making is ordinal, and we hope you'll come make the one after this, with us.</p>
+  </div>
+
+  <div class="sheet roles">
+    <h2>We have no openings right now.</h2>
+    <p>That is the honest answer, and we would rather say it than keep a list of roles we are not hiring for.</p>
+    <p>If what you just read sounds like something you would want to spend your time on, write to us anyway. Tell us what you have made and what you would want to make next. We read everything, and we keep the good ones.</p>
+    <div class="acts">
+      <a class="ctl solid" href="mailto:hello@ordinalcomputer.com?subject=Careers">Write to us</a>
+      <a class="ctl" href="https://discord.gg/NhX4sgxDQ3" target="_blank" rel="noopener">Join the Discord</a>
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <div class="sheet foot-row">
+      <span class="m">&#169; 2026 Ordinal Computer</span>
+      <a class="m" href="/terms/">Terms</a>
+      <a class="m" href="/privacy/">Privacy</a>
+      <a class="m" href="mailto:hello@ordinalcomputer.com">hello@ordinalcomputer.com</a>
+      <span class="foot-gap" aria-hidden="true"></span>
+      <a class="m" href="https://www.linkedin.com/company/ordinal-computer/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="m" href="https://discord.gg/NhX4sgxDQ3" target="_blank" rel="noopener">Discord</a>
+    </div>
+  </footer>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three":         "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.webgpu.js",
+    "three/webgpu":  "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.webgpu.js",
+    "three/tsl":     "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.tsl.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from "three";
+import { pass } from "three/tsl";
+import { bloom } from "three/addons/tsl/display/BloomNode.js";
+
+const canvas  = document.getElementById("field");
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const forceWebGL = new URLSearchParams(location.search).has("webgl");
+
+const renderer = new THREE.WebGPURenderer({ canvas, antialias: true, forceWebGL });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+await renderer.init();
+window.__backend = renderer.backend.isWebGPUBackend ? "WebGPU" : "WebGL2";
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(46, innerWidth / innerHeight, 0.1, 200);
+camera.position.set(-1.35, 0.3, 7);
+
+// ---- the succession ------------------------------------------------------
+// A run of rings marching toward a vanishing point. It is deliberately not a
+// finite set: the ring that reaches the camera is recycled to the far end, so
+// the sequence has no first member and no last member. That is the whole
+// claim of the page, and it is cheaper to draw than to argue.
+const N = 30, SPACING = 2.2, FAR = -N * SPACING;
+const group = new THREE.Group();
+scene.add(group);
+
+// the same five stops as the h1 gradient, so this is the site's spectrum
+const STOPS = ["#b9a4ff","#7fd7ff","#8affd0","#ffe6a3","#ffb0a0"]
+  .map(h => new THREE.Color(h));
+const _a = new THREE.Color();
+function spectrum(u){            // u: 0 nearest, 1 furthest
+  const x = Math.max(0, Math.min(0.9999, u)) * (STOPS.length - 1);
+  const i = Math.floor(x);
+  return _a.copy(STOPS[i]).lerp(STOPS[i + 1], x - i);
+}
+
+const rings = [];
+for (let i = 0; i < N; i++) {
+  const geo = new THREE.TorusGeometry(0.78, 0.011, 3, 128);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.85,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(2.1, 0, -i * SPACING);
+  mesh.rotation.z = i * 0.21;
+  group.add(mesh);
+  rings.push({ mesh, mat, i });
+}
+
+const scenePass = pass(scene, camera);
+const post = new THREE.PostProcessing(renderer);
+post.outputNode = scenePass.add(bloom(scenePass.getTextureNode(), 1.05, 0.7, 0.0));
+
+function advance(step) {
+  for (const r of rings) {
+    // travel toward the camera, then wrap to the far end. No first, no last.
+    let z = r.mesh.position.z + step;
+    if (z > 2.4) z = FAR;
+    r.mesh.position.z = z;
+    r.mesh.rotation.z += step * 0.08;
+    // d runs 0 at the far end to 1 as the ring passes the camera.
+    // Asymmetric on purpose: the far end has to dissolve well before the
+    // rings converge, or the sequence acquires a visible first member. The
+    // near end only needs to fade over the last stretch as it passes.
+    const d = (z - FAR) / (2.4 - FAR);
+    const far  = Math.min(1, d / 0.60) ** 2.9;
+    const near = Math.min(1, (1 - d) / 0.22);
+    r.mat.opacity = 0.9 * far * near;
+    r.mat.color.copy(spectrum(1 - d));
+
+    // Rings at even depths converge on screen and, under additive blending,
+    // sum into a bright point that reads as a source. Growing each ring with
+    // its distance makes them shrink as dist^-0.38 instead of dist^-1, so the
+    // sequence recedes without ever arriving anywhere.
+    const dist = Math.max(0.6, camera.position.z - z);
+    r.mesh.scale.setScalar((dist / 8) ** 0.62);
+  }
+}
+let scroll = 0, eased = 0, visible = 1;
+
+// The corridor has to sit clear above the headline. Aiming the camera below
+// the rings lifts them in frame, and because the shift is in normalised device
+// space it is a constant fraction of the viewport at any size. Checked by
+// projecting the ring bounds against the h1 rect: at 1280x800 the field lands
+// at y 132..331 and the headline starts at 363.
+let aimY = -2.0;
+const frameField = () => { aimY = innerWidth / innerHeight < 1.15 ? -1.5 : -2.0; };
+frameField();
+const readScroll = () => {
+  const max = Math.max(1, document.body.scrollHeight - innerHeight);
+  scroll = Math.min(1, scrollY / max);
+  // The field belongs to the fold. Past it the page is prose, and a lit
+  // corridor drawn through body text is just a legibility bug with a mood.
+  visible = Math.max(0, 1 - scrollY / (innerHeight * 0.62));
+  canvas.style.opacity = visible.toFixed(3);
+};
+addEventListener("scroll", readScroll, { passive: true });
+readScroll();
+
+let t0 = 0;
+function frame(ms) {
+  const t = ms * 0.001;
+  if (!t0) t0 = t;
+  const e = t - t0;
+  eased += (scroll - eased) * 0.05;
+
+  // Nothing on screen, so nothing to simulate or draw. The rings freeze where
+  // they are and carry on from there if the page is scrolled back up.
+  if (visible <= 0.004) return;
+
+  advance(0.0075);
+
+  // a very slow breath, plus a little parallax as the page is read
+  group.rotation.y = Math.sin(e * 0.05) * 0.02;
+  group.position.y = -eased * 0.9;
+  camera.position.z = 7 - eased * 1.6;
+  camera.position.y = 0.3 + eased * 0.5;
+  camera.lookAt(0.9, group.position.y + aimY, -3);
+
+  post.renderAsync();
+}
+
+if (reduced) {
+  advance(0);
+  camera.lookAt(0.9, aimY, -3);
+  post.renderAsync();
+} else {
+  renderer.setAnimationLoop(frame);
+}
+
+addEventListener("resize", () => {
+  const w = Math.max(1, innerWidth), h = Math.max(1, innerHeight);
+  frameField();
+  readScroll();
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+});
+</script>
+</body>
+</html>
