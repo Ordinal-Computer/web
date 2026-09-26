@@ -100,15 +100,11 @@ body{
 /* ---- the light field, full bleed, behind everything -------------------- */
 #field{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
 /* keeps type legible over the brightest part of the spectrum without
-   flattening the glow. The along-flow layer used to reach fully clear at 74%
-   and stay clear, so the brightest quarter of the frame had no scrim over it
-   at all. It now bottoms out at .20 and runs to the edge, which scales the fan
-   down rather than flattening it. Do not take that floor much past .25: at .36
-   the field keeps almost no pixel above L 0.30 and stops reading as light. */
+   flattening the glow: a soft floor, not a scrim over the whole frame */
 .veil{position:fixed;inset:0;z-index:1;pointer-events:none;
   background:
     linear-gradient(100deg, rgba(6,6,10,.97) 0%, rgba(6,6,10,.93) 26%, rgba(6,6,10,.62) 44%,
-                            rgba(6,6,10,.32) 60%, rgba(6,6,10,.16) 76%, rgba(6,6,10,.20) 100%),
+                            rgba(6,6,10,.18) 60%, rgba(6,6,10,0) 74%),
     linear-gradient(to bottom, rgba(6,6,10,.80) 0%, rgba(6,6,10,0) 22%),
     linear-gradient(to top, rgba(6,6,10,.55) 0%, rgba(6,6,10,0) 18%);
 }
@@ -161,7 +157,7 @@ body{
 
 /* the fold proper. generous, because "cluttered at the top" was the note. */
 .fold{flex:1;display:flex;flex-direction:column;justify-content:center;
-  padding:var(--s12) 0 var(--s12)}
+  padding-block:var(--s12)}
 .eyebrow{color:var(--dim);margin:0 0 var(--s6)}
 h1{
   font-size:var(--t-display); font-weight:300; line-height:1.0;
@@ -194,6 +190,22 @@ h1 .gl{
   h1 .gl{animation:none}
 }
 .sub{max-width:56ch;color:var(--body);margin:var(--s6) 0 0;line-height:1.55;font-size:var(--t-3)}
+
+/* The fold's sub-paragraph is the smallest text on the page sitting directly
+   on the live field, and the fan is brightest right where its lines end: the
+   ground under it goes from L 0.003 at the first word to L 0.054 at the last.
+   A scrim shaped to this one block buys the contrast back without touching the
+   dispersion, which is the whole reason the veil is not simply made heavier.
+   Sized off the text with a negative inset rather than in percentages of the
+   section, so it follows the paragraph at any width and reflows with it.
+   ::before rather than a background, so there is no layout shift and nothing
+   to undo at the breakpoints. */
+.fold .sub{position:relative;isolation:isolate}
+.fold .sub::before{content:"";position:absolute;z-index:-1;
+  inset:-68px -130px -76px -60px;
+  background:radial-gradient(50% 50% at 38% 50%,
+    rgba(6,6,10,.93) 0%,rgba(6,6,10,.86) 38%,rgba(6,6,10,.54) 66%,
+    rgba(6,6,10,.20) 85%,rgba(6,6,10,0) 100%)}
 .acts{display:flex;gap:12px;margin:var(--s8) 0 0;flex-wrap:wrap}
 
 
@@ -278,8 +290,8 @@ h1 .gl{
    and the rule plus the cast shadow finish the edge.
 
    The field is untouched. Nothing in the three.js module changes, and at this
-   scroll depth the field was already gone: .how paints .97 above it, so this
-   band replaces a wall that was opaque already.
+   scroll depth the field was already gone: .how paints .97 above it and .close
+   is a wall of its own below, so this band replaces opaque ground either way.
    ------------------------------------------------------------------------ */
 .app{
   /* token scope, the same mechanism .over-field uses at the top of this file.
@@ -524,11 +536,11 @@ h1 .gl{
 /* ---- section seams: let the light through instead of flat black --------- */
 .proof{background:
   linear-gradient(to bottom,rgba(6,6,10,.99) 0%,rgba(6,6,10,.90) 50%,rgba(6,6,10,.99) 100%)}
-/* .flick is split off from .proof: its right column gets the thinnest veil on
-   the page, because the 100deg gradient has bottomed out at .20 by then, and
-   the toggle label is the only small text on the page sitting in it. The .90
-   window stays, it just moves up to the headline rows, which are --ink,
-   instead of landing on the label. */
+/* .flick is split off from .proof: it is the one section with no veil behind
+   its right column, because the 100deg gradient has reached its transparent
+   stop out there, and the toggle label is the only small text on the page
+   sitting in it. The .90 window stays, it just moves up to the headline rows,
+   which are --ink, instead of landing on the label. */
 .flick{background:
   linear-gradient(to bottom,rgba(6,6,10,.99) 0%,rgba(6,6,10,.90) 34%,
                             rgba(6,6,10,.97) 62%,rgba(6,6,10,.99) 100%)}
@@ -617,7 +629,7 @@ h1 .gl{color:var(--ink)}
    Flip the tokens rather than restating every colour. */
 @media print{
   :root{--void:#fff;--ink:#111;--body:#333;--dim:#4a4a52;--dim-lit:#4a4a52}
-  #field,.veil,.close::before{display:none}
+  #field,.veil,.close::before,.fold .sub::before{display:none}
   body{background:#fff;color:#111}
   .problem,.flick,.proof,.site-foot,.plate{background:none}
   /* .app carries its own opaque ground and its own token scope, so it needs
@@ -957,10 +969,10 @@ camera.position.set(0, 0, 9);
 // no copy on the page ties it to one.
 const N = 56;
 const group = new THREE.Group();
-// Parked clear of the content column. The fan used to sit at (3.4, -1.15),
-// which put its bright neck directly under the sub-paragraph: that paragraph
-// measured a 19x luminance ramp from its first word to its last.
-const FAN_X = 4.6, FAN_Y = -2.4;
+// One home for the parked position: the constructor, the scroll motion and the
+// reduced-motion branch all used to carry these as literals and had to be kept
+// in step by hand.
+const FAN_X = 3.4, FAN_Y = -1.15;
 group.position.set(FAN_X, FAN_Y, 0);
 scene.add(group);
 
@@ -974,53 +986,26 @@ for (let i = 0; i < N; i++) {
 
   // violet through red, the order a prism actually puts them in
   const hue = 0.78 - t * 0.78;
-  // Saturated additive neon on near black is the harshest pairing available,
-  // and "eye-hurting" was the word three people reached for. This is closer to
-  // the headline gradient, which is the same spectrum and draws no complaints.
-  const col = new THREE.Color().setHSL(hue, 0.68, 0.62);
+  const col = new THREE.Color().setHSL(hue, 0.82, 0.60);
 
   // all strands leave the same point on the left and separate as they travel
   const curve = new THREE.CubicBezierCurve3(
     V(-6.4, 0, 0),
     V(-2.0, s * 0.35, s * 0.25),
     V( 1.4, s * 3.1,  s * 1.5),
-    V( 6.8, s * 3.9,  s * 2.0)
+    V( 6.8, s * 5.0,  s * 2.4)
   );
 
-  // Wide enough that neighbouring filaments overlap at the far end. At the old
-  // 0.012 they covered about 43% of their own spacing out there, so the fan
-  // resolved into 56 separate lines instead of a spectrum, and a coherent
-  // high-frequency stripe pattern is a large part of why this read as harsh.
-  const geo = new THREE.TubeGeometry(curve, 96, 0.030 + Math.abs(s) * 0.010, 3, false);
-
-  // Dispersed light spreads a fixed amount of energy over a widening area, so
-  // it has to dim as it fans. The old version held every filament at full
-  // strength along its whole length, which put 78% of the hero's light in the
-  // right half while the headline and both buttons sit in the left half.
-  // The exponent is set by eye against the captures, not derived.
-  // Under additive blending a vertex colour of black contributes nothing, so
-  // the taper rides on vertex colour and leaves material.color free for the
-  // per-strand hue and the drain lerp below.
-  const TS = 96, RS = 3;
-  const cols = new Float32Array((TS + 1) * (RS + 1) * 3);
-  for (let vi = 0; vi < (TS + 1) * (RS + 1); vi++) {
-    const u = Math.floor(vi / (RS + 1)) / TS;     // 0 at the entry, 1 at the far edge
-    const k = Math.pow(1 - u, 2.3);
-    cols[vi * 3] = cols[vi * 3 + 1] = cols[vi * 3 + 2] = k;
-  }
-  geo.setAttribute("color", new THREE.BufferAttribute(cols, 3));
-
+  const geo = new THREE.TubeGeometry(curve, 96, 0.012 + Math.abs(s) * 0.006, 3, false);
   const mat = new THREE.MeshBasicMaterial({
-    color: col, vertexColors: true, transparent: true, opacity: 0.85,
+    color: col, transparent: true, opacity: 0.85,
     blending: THREE.AdditiveBlending, depthWrite: false,
   });
   const mesh = new THREE.Mesh(geo, mat);
   group.add(mesh);
   // frame() overwrites mat.opacity from this every tick, so base is the real
   // brightness control and the constructor opacity above only sets frame one.
-  // Lowered to pay for the wider tubes, which overlap far more under additive
-  // blending than their radius alone suggests.
-  strands.push({ mesh, mat, base: 0.30 + Math.abs(s) * 0.24, phase: i * 0.37, s, hue: col.clone() });
+  strands.push({ mesh, mat, base: 0.62 + Math.abs(s) * 0.5, phase: i * 0.37, s, hue: col.clone() });
 }
 
 // the single beam before it splits, so the "one in" half of the idea reads
@@ -1036,10 +1021,7 @@ group.add(beam);
 // ---- bloom ----------------------------------------------------------------
 const scenePass = pass(scene, camera);
 const post = new THREE.PostProcessing(renderer);
-// A threshold of 0 bloomed every lit pixel including the dimmest, which is
-// what turned the fan's edges into a wash across the whole right half rather
-// than a glow around its bright core.
-post.outputNode = scenePass.add(bloom(scenePass.getTextureNode(), 1.0, 0.85, 0.22));
+post.outputNode = scenePass.add(bloom(scenePass.getTextureNode(), 1.15, 0.85, 0.0));
 
 // ---- motion ---------------------------------------------------------------
 // a slow breathing drift. nothing snaps, nothing loops visibly.
