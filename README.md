@@ -10,9 +10,9 @@ python3 -m http.server 4173
 
 ## Files
 
-- `index.html`: every section, in the order it renders
-- `styles.css`: tokens at the top, then sections in the same order as the markup
-- `script.js`: scroll choreography, menu, pricing toggle, FAQ, 3D logo
+- `index.html`: every section, in the order it renders, with its CSS and JS inline: one `<style>` (tokens at
+  the top, then sections in markup order), then scripts for the 3D hero (three.js module), scroll choreography
+  (GSAP ScrollTrigger) and the menu
 - `og-image.png`: 1200x630 link preview card, pointed at by the og:image and twitter:image tags
 - `app-shots/`: real screenshots of the desktop app (Overview, Tasks, Usage, and two Tasks
   detail states) used in the demo, the how-it-works walkthrough, and the app showcase
